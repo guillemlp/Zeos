@@ -24,9 +24,10 @@ long outer(long n)
 int add1(int par1, int par2) {
 	return par1+par2;
 }
-
+//no input/ouput inline
 int add2(int par1, int par2) {
-	//"pushl %ebp;"
+	//  no fa falta ja ho fa
+	//  "pushl %ebp;"
 	//	 "movl %esp, %ebp;"
 	asm("movl 8(%ebp), %eax;"
 		 "movl 12(%ebp), %ecx;"
@@ -34,6 +35,14 @@ int add2(int par1, int par2) {
 		 "movl %ebp, %esp;"
 		 "popl %ebp;"
 		 "ret;");
+}
+//input/ouput inline
+int add_v2(int par1, int par2) {
+	int var;
+	asm("addl %%ecx, %%eax"
+		 : "=r" (var)
+		 : "a" (par1), "b" (par2) );
+	return var;
 }
 
 int __attribute__ ((__section__(".text.main")))
@@ -46,7 +55,7 @@ int __attribute__ ((__section__(".text.main")))
 	//count = 75;
 	//acum = 0;
 	//acum = outer(count);
-	//int num = add1(1,2);
+	int num = add1(1,2);
 	//int a = add2(2,3);
 	//int n = a;
 
