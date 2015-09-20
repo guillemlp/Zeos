@@ -36,30 +36,34 @@
 /**************************************************/
 
 #define SAVE_ALL \
-      pushl %gs; \
-      pushl %fs; \
-      pushl %es; \
-      pushl %ds; \
-      pushl %eax; \
-      pushl %ebp; \
-      pushl %edi; \
-      pushl %esi; \
-      pushl %edx; \
-      pushl %ecx; \
-      pushl %ebx; \
-      movl $__KERNEL_DS, %edx;    \
-      movl %edx, %ds;           \
-      movl %edx, %es
+    pushl %gs; \
+    pushl %fs; \
+    pushl %es; \
+    pushl %ds; \
+    pushl %eax; \
+    pushl %ebp; \
+    pushl %edi; \
+    pushl %esi; \
+    pushl %edx; \
+    pushl %ecx; \
+    pushl %ebx; \
+    movl $__KERNEL_DS, %edx;    \
+    movl %edx, %ds;           \
+    movl %edx, %es
 
 #define RESTORE_ALL \ //??????
-      popl %ebx; \
-      popl %ecx; \
-      popl %edx; \
-      popl %esi; \
-      popl %edi; \
-      popl %ebp; \
-      popl %ds; \
-      popl %eax; \
-      popl %es; \
-      popl %fs; \
-      popl %gs; \
+    popl %ebx; \
+    popl %ecx; \
+    popl %edx; \
+    popl %esi; \
+    popl %edi; \
+    popl %ebp; \
+    popl %ds; \
+    popl %eax; \
+    popl %es; \
+    popl %fs; \
+    popl %gs; \
+
+#define EOI  \
+    movb $0x20, %al; \
+    outb %al, $0x20; \
