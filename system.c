@@ -69,7 +69,7 @@ int __attribute__((__section__(".text.main")))
   // 'ds' register to access the address... but we are not ready for that yet
   // (we are still in real mode).
   set_seg_regs(__KERNEL_DS, __KERNEL_DS, (DWord) &protected_tasks[5]);
-
+  
   printk("Kernel Loaded!    "); 
 
   /* Initialize hardware data */

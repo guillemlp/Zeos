@@ -83,7 +83,38 @@ void setIdt()
   set_handlers();
 
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
+  setInterruptHandler(33, keyboard_handler, 0);
 
   set_idt_reg(&idtR);
 }
+
+// function for printing the key pressed
+void print_key(char key) {
+  printc_xy(0, 0, key);
+}
+
+// keyboard service routine
+void keyboard_routine(void) {
+  
+  unsigned char c = inb(0x60);
+  if ((c & 0x80) == 0) { //make
+    char aux = char_map[c&0x7F];
+    if (aux != '\0') {
+      //printk("valid");
+      print_key(aux);
+    }
+    else {
+      //printk("no valid");
+      print_key('C');
+    }
+  }
+  else { // break
+    // ??processar_lletra();
+    //print_key('B');
+  }
+}
+
+
+
+
 
