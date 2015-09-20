@@ -1,0 +1,17 @@
+#romimage: file=$BXSHARE/BIOS-bochs-latest
+#vgaromimage: file=$BXSHARE/VGABIOS-elpin-2.40
+megs: 16
+
+floppya: 1_44=./zeos.bin, status=inserted
+boot: floppy
+floppy_bootsig_check: disabled=0
+
+log: bochsout.txt
+panic: action=ask
+error: action=report
+info: action=report
+debug: action=ignore
+debugger_log: -
+
+
+
