@@ -65,7 +65,14 @@ int sys_write(int fd, char *buffer, int size) {
 	if (size < 0) {
 		return -1;
 	}
-	int num = 0;
-	//int num = sys_write_console(1,size);
-	return num;
+	int *aux;
+	// copy data from user to kernel
+	int err = copy_from_user(buffer, aux, size);
+	if (err == -1) {
+		return -1;
+	}
+	else {
+		int num = sys_write_console(aux,size);
+		return num;
+	}
 }

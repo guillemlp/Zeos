@@ -9,6 +9,7 @@
 int errno;
 
 int write(int fd, char *buffer, int size) {
+    int ret = -1;
     asm("movl %%eax, %%ebx"
          : 
          : "a" (fd));
@@ -18,9 +19,14 @@ int write(int fd, char *buffer, int size) {
     asm("movl %%eax, %%edx"
          : 
          : "a" (size));
-    asm("movl $4, %eax");
-    //ojo!!!
-    return 0;
+    asm("movl $4, %eax"
+        "int $0x80"
+        : "=r" (ret));
+    if (ret >= 0) return ret;
+    else {
+        errno = ret;
+        return -1; 
+    }
 }
 
 void itoa(int a, char *b) {
