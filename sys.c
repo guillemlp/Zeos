@@ -45,3 +45,8 @@ int sys_fork()
 void sys_exit()
 {  
 }
+
+// System call Write
+void sys_write() {
+
+}

@@ -55,7 +55,7 @@ int __attribute__ ((__section__(".text.main")))
 	//count = 75;
 	//acum = 0;
 	//acum = outer(count);
-	int num = add1(1,2);
+	//int num = add1(1,2);
 	//int a = add2(2,3);
 	//int n = a;
 

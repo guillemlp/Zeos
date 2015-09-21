@@ -84,6 +84,7 @@ void setIdt()
 
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
   setInterruptHandler(33, keyboard_handler, 0);
+  setInterruptHandler(0x80, system_call_handler, 3);
 
   set_idt_reg(&idtR);
 }
@@ -95,7 +96,6 @@ void print_key(char key) {
 
 // keyboard service routine
 void keyboard_routine(void) {
-  
   unsigned char c = inb(0x60);
   if ((c & 0x80) == 0) { //make
     char aux = char_map[c&0x7F];
