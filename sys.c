@@ -58,11 +58,14 @@ int sys_write(int fd, char *buffer, int size) {
 		return check;
 	}
 	//check >= 0 no error
-
-	if (buffer != null) {
-
+	if (buffer == 0) {
+		return -1; //?? inventat
 	}
-	else { //error in buffer, is null
+	// buffer != null
+	if (size < 0) {
 		return -1;
 	}
+	int num = 0;
+	//int num = sys_write_console(1,size);
+	return num;
 }

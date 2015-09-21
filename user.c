@@ -4,6 +4,11 @@ char buff[24];
 
 int pid;
 
+void test_write() {
+	char buffer[3] = "abc";
+	write(1,buffer,3);
+}
+
 long inner(long n) 
 {
 	int i;
@@ -31,17 +36,17 @@ int add2(int par1, int par2) {
 	//	 "movl %esp, %ebp;"
 	asm("movl 8(%ebp), %eax;"
 		 "movl 12(%ebp), %ecx;"
-		 "addl %ecx, %eax;"
-		 "movl %ebp, %esp;"
-		 "popl %ebp;"
-		 "ret;");
+		 "addl %ecx, %eax;");
+	// "movl %ebp, %esp;"
+	//	 "popl %ebp;"
+	//	 "ret;"
 }
 //input/ouput inline
 int add_v2(int par1, int par2) {
 	int var;
 	asm("addl %%ecx, %%eax"
 		 : "=r" (var)
-		 : "a" (par1), "b" (par2) );
+		 : "a" (par1), "c" (par2) );
 	return var;
 }
 
@@ -59,6 +64,7 @@ int __attribute__ ((__section__(".text.main")))
 	//int a = add2(2,3);
 	//int n = a;
 
-   while(1) { }
-   return 0;	
+	test_write();
+    while(1) { }
+    return 0;	
 }
