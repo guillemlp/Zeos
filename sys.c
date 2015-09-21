@@ -46,7 +46,23 @@ void sys_exit()
 {  
 }
 
-// System call Write
-void sys_write() {
+// Write system call Service routine
+int sys_write(int fd, char *buffer, int size) {
+	// fd: file descriptor. In this case --> always 1
+	// buffer: pointer to the bytes to write.
+	// size; number of bytes
+	// return negative number in case of error (indicating error)
+	// else --> return number of bytes write
+	int check = check_fd(fd,ESCRIPTURA);
+	if (check < 0) {
+		return check;
+	}
+	//check >= 0 no error
 
+	if (buffer != null) {
+
+	}
+	else { //error in buffer, is null
+		return -1;
+	}
 }
