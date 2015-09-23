@@ -85,6 +85,7 @@ void setIdt()
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
   setInterruptHandler(33, keyboard_handler, 0);
   setInterruptHandler(0x80, system_call_handler, 3);
+  setInterruptHandler(32, clock_handler, 0); // is in this privileged mode???
 
   set_idt_reg(&idtR);
 }
@@ -100,18 +101,19 @@ void keyboard_routine(void) {
   if ((c & 0x80) == 0) { //make
     char aux = char_map[c&0x7F];
     if (aux != '\0') {
-      //printk("valid");
       print_key(aux);
     }
     else {
-      //printk("no valid");
       print_key('C');
     }
   }
-  else { // break
-    // ??processar_lletra();
-    //print_key('B');
+  else { // break 
+    // do nothing
   }
+}
+
+void clock_routine() {
+  zeos_show_clock()
 }
 
 

@@ -12,21 +12,6 @@ int perror() {
     return errno;
 }
 
-/* 
-    asm("movl %%eax, %%ebx"
-         : 
-         : "a" (fd));
-    asm("movl %%eax, %%ecx"
-         : 
-         : "a" (buffer));
-    asm("movl %%eax, %%edx"
-         : 
-         : "a" (size));
-    asm("movl $4, %%eax;"
-        "int $0x80;"
-        : "=r" (ret));
-*/
-
 int write(int fd, char *buffer, int size) {
     int ret = -1;
     asm("movl $4, %%eax;"
