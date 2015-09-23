@@ -8,8 +8,11 @@
 
 int errno;
 
-int write(int fd, char *buffer, int size) {
-    int ret = -1;
+int perror() {
+    return errno;
+}
+
+/* 
     asm("movl %%eax, %%ebx"
          : 
          : "a" (fd));
@@ -22,6 +25,15 @@ int write(int fd, char *buffer, int size) {
     asm("movl $4, %%eax;"
         "int $0x80;"
         : "=r" (ret));
+*/
+
+int write(int fd, char *buffer, int size) {
+    int ret = -1;
+    asm("movl $4, %%eax;"
+        "int $0x80;"
+        : "=r" (ret)
+        : "b"(fd), "c" (buffer), "d" (size) );
+    
     if (ret >= 0) return ret;
     else {
         errno = ret;

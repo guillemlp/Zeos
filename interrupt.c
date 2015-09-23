@@ -91,7 +91,7 @@ void setIdt()
 
 // function for printing the key pressed
 void print_key(char key) {
-  printc_xy(0, 0, key);
+  printc_xy(0, 20, key);
 }
 
 // keyboard service routine

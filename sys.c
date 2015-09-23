@@ -65,11 +65,11 @@ int sys_write(int fd, char *buffer, int size) {
 	if (size < 0) {
 		return -1;
 	}
-	int *aux;
+	char *aux;
 	// copy data from user to kernel
-	int err = copy_from_user(buffer, aux, size);
+	int err = copy_from_user(&buffer, &aux, size);
 	if (err == -1) {
-		return -1;
+		return err;
 	}
 	else {
 		int num = sys_write_console(aux,size);
