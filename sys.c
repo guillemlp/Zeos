@@ -13,6 +13,8 @@
 
 #include <sched.h>
 
+#include <zeos_interrupt.h> 
+
 #define LECTURA 0
 #define ESCRIPTURA 1
 
@@ -45,7 +47,10 @@ int sys_fork()
 void sys_exit()
 {  
 }
-
+// TODO check something!!!
+int sys_gettime() {
+	return zeos_ticks;
+}
 // Write system call Service routine
 int sys_write(int fd, char *buffer, int size) {
 	// fd: file descriptor. In this case --> always 1

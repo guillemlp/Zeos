@@ -13,4 +13,7 @@ int access_ok(int type, const void *addr, unsigned long size);
 
 unsigned long get_ticks(void);
 
+//variable ticks
+extern long long int zeos_ticks;
+
 #endif

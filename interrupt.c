@@ -6,6 +6,7 @@
 #include <segment.h>
 #include <hardware.h>
 #include <io.h>
+#include <utils.h> 
 
 #include <zeos_interrupt.h>
 
@@ -15,11 +16,11 @@ Register    idtR;
 char char_map[] =
 {
   '\0','\0','1','2','3','4','5','6',
-  '7','8','9','0','\'','ก','\0','\0',
+  '7','8','9','0','\'','ยก','\0','\0',
   'q','w','e','r','t','y','u','i',
   'o','p','`','+','\0','\0','a','s',
-  'd','f','g','h','j','k','l','๑',
-  '\0','บ','\0','็','z','x','c','v',
+  'd','f','g','h','j','k','l','รฑ',
+  '\0','ยบ','\0','รง','z','x','c','v',
   'b','n','m',',','.','-','\0','*',
   '\0','\0','\0','\0','\0','\0','\0','\0',
   '\0','\0','\0','\0','\0','\0','\0','7',
@@ -92,7 +93,7 @@ void setIdt()
 
 // function for printing the key pressed
 void print_key(char key) {
-  printc_xy(0, 20, key);
+  
 }
 
 // keyboard service routine
@@ -112,7 +113,9 @@ void keyboard_routine(void) {
   }
 }
 
+// clock service routine
 void clock_routine() {
+  zeos_ticks = zeos_ticks + 1;
   zeos_show_clock();
 }
 

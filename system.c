@@ -13,6 +13,7 @@
 #include <utils.h>
 #include <zeos_mm.h> /* TO BE DELETED WHEN ADDED THE PROCESS MANAGEMENT CODE TO BECOME MULTIPROCESS */
 
+long long int zeos_ticks = 0;
 
 int (*usr_main)(void) = (void *) PH_USER_START;
 unsigned int *p_sys_size = (unsigned int *) KERNEL_START;
@@ -61,6 +62,8 @@ int __attribute__((__section__(".text.main")))
   main(void) 
 {
 
+  
+
   set_eflags();
 
   /* Define the kernel segment registers  and a stack to execute the 'main' code */
@@ -91,6 +94,7 @@ int __attribute__((__section__(".text.main")))
   init_idle();
   /* Initialize task 1 data */
   init_task1();
+
 
   /* Move user code/data now (after the page table initialization) */
   copy_data((void *) KERNEL_START + *p_sys_size, usr_main, *p_usr_size);

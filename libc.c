@@ -12,6 +12,19 @@ int perror() {
     return errno;
 }
 
+int gettime() {
+    int ret = -1;
+    asm("movl $10, %%eax;"
+        "int $0x80;"
+        : "=r" (ret));
+    
+    if (ret >= 0) return ret;
+    else {
+        errno = ret;
+        return -1; 
+    }
+}
+
 int write(int fd, char *buffer, int size) {
     int ret = -1;
     asm("movl $4, %%eax;"

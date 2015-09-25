@@ -9,6 +9,13 @@ void test_write() {
 	write(1,"abc",3);
 }
 
+void test_gettime() {
+	char a[10];
+	int ticks = gettime();
+	itoa(ticks, a);
+	write(1,a,3);
+}
+
 long inner(long n) 
 {
 	int i;
@@ -64,7 +71,13 @@ int __attribute__ ((__section__(".text.main")))
 	//int a = add2(2,3);
 	//int n = a;
 
-	test_write();
-    while(1) { }
+	//test_write();
+	int j = 0;
+    while(1) {
+    	if (j == 10 || j == 100000) {
+    		test_gettime();
+    	}
+    	++j;
+    }
     return 0;	
 }
