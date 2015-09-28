@@ -7,6 +7,7 @@ int pid;
 void test_write() {
 	char buffer[3] = "abc";
 	write(1,"abc",3);
+	write(1,"AAA",3);
 }
 
 void test_gettime() {
@@ -71,11 +72,11 @@ int __attribute__ ((__section__(".text.main")))
 	//int a = add2(2,3);
 	//int n = a;
 
-	//test_write();
+	test_write();
 	int j = 0;
     while(1) {
     	if (j == 10 || j == 100000) {
-    		test_gettime();
+    		//test_gettime();
     	}
     	++j;
     }

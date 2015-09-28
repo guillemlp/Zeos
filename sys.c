@@ -58,26 +58,35 @@ int sys_write(int fd, char *buffer, int size) {
 	// size; number of bytes
 	// return negative number in case of error (indicating error)
 	// else --> return number of bytes write
-	int check = check_fd(fd,ESCRIPTURA);
-	if (check < 0) {
-		return check;
-	}
-	//check >= 0 no error
-	if (buffer == 0) {
-		return -1; //?? inventat
-	}
+	// errors
+	// check >= 0 no error
 	// buffer != null
-	if (size < 0) {
-		return -1;
-	}
-	char *aux;
+	int check = check_fd(fd,ESCRIPTURA);
+	if (check < 0) return check;
+	if (buffer == 0) return -14; // EFAULT Bad address
+	if (size < 0) return -1;
+
+	//not the best approach!!! u have to char[30] and copy print while true
+	//char *aux;
 	// copy data from user to kernel
-	int err = copy_from_user(&buffer, &aux, size);
-	if (err == -1) {
-		return err;
+	//int err = copy_from_user(&buffer, &aux, size);
+	char buf[64];
+	int num = 64;
+	if (size < num) num = size;
+	int wr = 0;
+	int res = 0;
+	int err = 0;
+	while (wr < size && res >= 0) {
+		res = copy_from_user(buffer, buf, num);
+		if (res < 0) return res;
+		res = sys_write_console(buf,num);
+		if (res >= 0) {
+			wr = wr + res;
+		}
 	}
+	if (res < 0) return err;
 	else {
-		int num = sys_write_console(aux,size);
+		//int num = sys_write_console(aux,size);
 		return num;
 	}
 }
