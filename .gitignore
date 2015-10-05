@@ -1,0 +1,11 @@
+*.s
+*.o
+*.out
+*.lib
+*.a
+*.bin
+*.lds
+user
+build
+system
+bootsect
