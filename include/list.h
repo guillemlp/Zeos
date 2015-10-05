@@ -19,7 +19,7 @@ struct list_head {
  *   struct element {
  *     int a;
  *     char b;
- *     struct list head anchor; //This is the anchor in the list
+ *     struct list_head anchor; //This is the anchor in the list
  *     ...
  *   };
  *

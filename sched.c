@@ -59,28 +59,37 @@ void cpu_idle(void)
 	}
 }
 
-void init_idle (void)
-{
+void init_idle (void) {
 
 }
 
-void init_task1(void)
-{
+void init_task1(void) {
 }
 
 
 void init_sched(){
+	
+	//free queue declaration
+	struct list_head freequeue;
+
+	// initialization in the freequeue
+	INIT_LIST_HEAD( &freequeue );
+
+	// add all process structs
+	int i;
+	for (i = 0; i < NR_TASKS; ++i) {
+		list_add(&(task[i].task.list), &freequeue);
+	}
 
 }
 
-struct task_struct* current()
-{
-  int ret_value;
+struct task_struct* current() {
+	int ret_value;
   
-  __asm__ __volatile__(
-  	"movl %%esp, %0"
-	: "=g" (ret_value)
-  );
-  return (struct task_struct*)(ret_value&0xfffff000);
+	__asm__ __volatile__(
+		"movl %%esp, %0"
+		: "=g" (ret_value)
+	);
+	return (struct task_struct*)(ret_value&0xfffff000);
 }
 
