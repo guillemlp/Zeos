@@ -69,10 +69,10 @@ void init_task1(void) {
 
 void init_sched(){
 	
-	//free queue declaration
+	// free queue declaration
 	struct list_head freequeue;
 
-	// initialization in the freequeue
+	// initialization freequeue
 	INIT_LIST_HEAD( &freequeue );
 
 	// add all process structs
@@ -81,6 +81,11 @@ void init_sched(){
 		list_add(&(task[i].task.list), &freequeue);
 	}
 
+	// ready queue
+	struct list_head readyqueue;
+
+	// initialization readyqueue
+	INIT_LIST_HEAD( &readyqueue );
 }
 
 struct task_struct* current() {

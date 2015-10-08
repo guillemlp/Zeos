@@ -1,0 +1,20 @@
+<<<<<<< HEAD
+
+*.o
+*.out
+*.lib
+*.a
+*.bin
+*.lds
+user
+build
+system
+bootsect
+
+
+
+||||||| merged common ancestors
+=======
+*.o
+
+>>>>>>> b764ebbe4e3d29b2913eececc28ae6e4c32a2ca9
