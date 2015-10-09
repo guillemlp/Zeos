@@ -6,6 +6,7 @@ int pid;
 
 void test_write() {
 	char buffer[3] = "abc";
+	write(1,buffer,3);
 	write(1,"abc",3);
 	write(1,"AAA",3);
 }
