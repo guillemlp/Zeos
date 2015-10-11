@@ -109,7 +109,7 @@ void init_sched(){
 	// add all process structs
 	int i;
 	for (i = 0; i < NR_TASKS; ++i) {
-		list_add(&(task[i].task.list), &freequeue);
+		list_add_tail(&(task[i].task.list), &freequeue);
 	}
 
 	// ready queue
