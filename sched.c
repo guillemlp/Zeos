@@ -6,10 +6,10 @@
 #include <mm.h>
 #include <io.h>
 
-// van aqui declarats??
+// global variables
  struct list_head freequeue;
  struct list_head readyqueue;
- struct task_struct *idle_task;
+ struct task_struct * idle_task;
 
 /**
  * Container for the Task array and 2 additional pages (the first and the last one)
@@ -64,30 +64,33 @@ void cpu_idle(void)
 }
 
 void init_idle (void) {
-	//1  Get an available task_union from the freequeue 
-	//   to contain the characteristics of this process
+	// Get an available task_union from the freequeue 
+	// to contain the characteristics of this process
 	struct list_head * first = list_first( &freequeue );
-	//struct union task_union * realelement = list_entry( first, union task_union, list );
-	struct task_struct * firsttask = list_head_to_task_struct(first);
+	struct task_struct * idletask = list_head_to_task_struct(first);
 	list_del( first ); 
-
-	//2  Assign PID 0 to the process
-	firsttask->PID = 0;
-
-	//3  Initialize field dir_pages_baseAaddr with a
-	//   new directory to store the process address 
-	//   space using the allocate_DIR routine.
-	allocate_DIR(firsttask);
-
-	//4 Initialize an execution context for the procees to restore it when it gets assigned the cpu
-	//  (see section 4.5) and executes cpu_idle.
-
-
+	// Assign PID 0 to the process
+	idletask->PID = 0;
+	// Initialize field dir_pages_baseAaddr with a
+	// new directory to store the process address 
+	// space using the allocate_DIR routine.
+	allocate_DIR(idletask);
+	// Initialize an execution context for the procees to restore it when it gets assigned the cpu
+	// (see section 4.5) and executes cpu_idle.
+	union task_union * idle_task_union = (union task_union *) idletask;
+	// Store in the stack of the idle process the address of the code that it will execute (address
+	// of the cpu_idle function).
+	idle_task_union->stack[KERNEL_STACK_SIZE-1] = &cpu_idle;
+	// Store in the stack the initial value that we want to assign to register ebp when undoing
+	// the dynamic link (it can be 0),
+	idle_task_union->stack[KERNEL_STACK_SIZE-2] = 0;
+	// Finally, we need to keep (in a field of its task_struct) the position of the stack where
+	// we have stored the initial value for the ebp register. This value will be loaded in the esp
+	// register when undoing the dynamic link.
+	idletask->list = idle_task_union->stack[KERNEL_STACK_SIZE-2];
 	//6 Initialize the global variable idle_task, which will help to get easily the task_struct of the
 	//  idle process.
-
-	idle_task = firsttask;
-
+	idle_task = idletask;
 
 }
 
