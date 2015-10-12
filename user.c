@@ -11,6 +11,13 @@ void test_write() {
 	write(1,"AAA",3);
 }
 
+void test_getpid() {
+	char a[10];
+	int ticks = getpid();
+	itoa(ticks, a);
+	write(1,a,1);
+}
+
 void test_gettime() {
 	char a[10];
 	int ticks = gettime();
@@ -38,6 +45,7 @@ long outer(long n)
 int add1(int par1, int par2) {
 	return par1+par2;
 }
+/*
 //no input/ouput inline
 int add2(int par1, int par2) {
 	//  no fa falta ja ho fa
@@ -49,7 +57,7 @@ int add2(int par1, int par2) {
 	// "movl %ebp, %esp;"
 	//	 "popl %ebp;"
 	//	 "ret;"
-}
+}*/
 //input/ouput inline
 int add_v2(int par1, int par2) {
 	int var;
@@ -73,11 +81,12 @@ int __attribute__ ((__section__(".text.main")))
 	//int a = add2(2,3);
 	//int n = a;
 
-	test_write();
+	//test_write();
+	test_getpid();
 	int j = 0;
     while(1) {
     	if ( j == 10000000) {
-    		test_gettime();
+    		//test_gettime();
     	}
     	++j;
     }

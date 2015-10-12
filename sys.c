@@ -49,8 +49,12 @@ void sys_exit()
 }
 // TODO check something!!!
 int sys_gettime() {
+	/*if (zeos_ticks == 1000000) {
+		task_switch(idle_task);
+	}*/
 	return zeos_ticks;
 }
+
 // Write system call Service routine
 int sys_write(int fd, char *buffer, int size) {
 	// fd: file descriptor. In this case --> always 1
@@ -90,3 +94,5 @@ int sys_write(int fd, char *buffer, int size) {
 		return num;
 	}
 }
+
+
