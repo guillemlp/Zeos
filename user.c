@@ -76,8 +76,8 @@ int __attribute__ ((__section__(".text.main")))
 	test_write();
 	int j = 0;
     while(1) {
-    	if (j == 10 || j == 100000) {
-    		//test_gettime();
+    	if ( j == 10000000) {
+    		test_gettime();
     	}
     	++j;
     }
