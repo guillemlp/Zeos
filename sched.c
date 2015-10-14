@@ -5,11 +5,15 @@
 #include <sched.h>
 #include <mm.h>
 #include <io.h>
+#include <libc.h> 
 
 // global variables
- struct list_head freequeue;
- struct list_head readyqueue;
- struct task_struct * idle_task;
+struct list_head freequeue;
+struct list_head readyqueue;
+struct task_struct * idle_task;
+struct task_struct * init_task;
+int freePID;
+
 
 /**
  * Container for the Task array and 2 additional pages (the first and the last one)
@@ -52,14 +56,14 @@ int allocate_DIR(struct task_struct *t)
 
 	return 1;
 }
-
+//extern int write(int fd, char *buffer, int size);
 void cpu_idle(void)
 {
 	__asm__ __volatile__("sti": : :"memory");
 
 	while(1)
 	{
-	;
+		sys_write(1,"idle",4);
 	}
 }
 
@@ -88,7 +92,7 @@ void init_idle (void) {
 	// position of the stack where we have stored the initial value for
 	// the ebp register. This value will be loaded in the esp
 	// register when undoing the dynamic link.
-	idletask->pointer = idle_task_union->stack[KERNEL_STACK_SIZE-2];
+	idletask->kernel_stack = &idle_task_union->stack[KERNEL_STACK_SIZE-2];
 	//6 Initialize the global variable idle_task, which will help to get
 	// easily the task_struct of the idle process.
 	idle_task = idletask;
@@ -121,6 +125,8 @@ void init_task1(void) {
 	// Set its page directory as the current page directory in the system,
 	// by using the set_cr3 function (see file mm.c).
 	set_cr3(inittask->dir_pages_baseAddr);
+	freePID = 2;
+	init_task = inittask;
 }
 void inner_task_switch(union task_union *t) {
 	// Update the TSS to make it point to the new_task system stack.
@@ -136,16 +142,15 @@ void inner_task_switch(union task_union *t) {
 	// stored value in the new PCB.
 	// (5)Restore the EBP register from the stack.
 	// (6)Return to the routine that called this one using the instruction RET
-	void * old = current()->pointer;
-	void * new = (t->task).pointer;
+	void * old = current()->kernel_stack;
+	void * new = (t->task).kernel_stack;
 	__asm__ __volatile__(
-		"movl %%ebp, %%eax;"
-		"movl %%ebx, %%ebx;"
+		"movl %%ebp, %0;"
+		"movl %1, %%esp;"
 		"popl %%ebp;"
 		"ret;"
 		:
-		: "a" (old), "b" (new) );
-	
+		: "g" (old), "g" (new) );
 }
 
 void task_switch(union task_union *t) {
@@ -156,9 +161,9 @@ void task_switch(union task_union *t) {
 	// call inner task switch
 	inner_task_switch(t);
 	// restore edi esi ebx
-	asm("pushl %ebx;"
-		"pushl %edi;"
-		"pushl %ebx;");
+	asm("popl %ebx;"
+		"popl %edi;"
+		"popl %esi;");
 
 }
 

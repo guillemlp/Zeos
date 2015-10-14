@@ -7,8 +7,12 @@
 #include <hardware.h>
 #include <io.h>
 #include <utils.h> 
+#include <sched.h> 
 
 #include <zeos_interrupt.h>
+
+extern struct task_struct * idle_task;
+extern struct task_struct * init_task; 
 
 Gate idt[IDT_ENTRIES];
 Register    idtR;
@@ -93,16 +97,27 @@ void setIdt()
 
 // function for printing the key pressed
 void print_key(char key) {
-  
+  printc_xy(0, 0, key);
 }
 
 // keyboard service routine
 void keyboard_routine(void) {
   unsigned char c = inb(0x60);
-  if ((c & 0x80) == 0) { //make
+  if ((c & 0x80) == 0) { // make
     char aux = char_map[c&0x7F];
     if (aux != '\0') {
-      print_key(aux);
+      if (aux == 'a') {
+        print_key('A');
+        task_switch(idle_task);
+      }
+      if (aux == 'b') {
+        print_key('B');
+        task_switch(init_task);
+
+      }
+      else {
+        print_key(aux);
+      }
     }
     else {
       print_key('C');

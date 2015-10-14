@@ -25,6 +25,18 @@ int gettime() {
     }
 }
 
+int fork(void) {
+    int ret = -1;
+    asm("movl $2, %%eax;"
+        "int $0x80;"
+        : "=r" (ret));
+    
+    if (ret >= 0) return ret;
+    else {
+        errno = ret;
+        return -1; 
+    }
+}
 
 int getpid(void) {
    int ret = -1;

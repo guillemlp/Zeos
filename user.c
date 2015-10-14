@@ -67,6 +67,12 @@ int add_v2(int par1, int par2) {
 	return var;
 }
 
+void print(int number) {
+	char str[1];
+	itoa(number, str);
+	write(1,str,1);
+}
+
 int __attribute__ ((__section__(".text.main")))
    main(void)
 {
@@ -82,13 +88,21 @@ int __attribute__ ((__section__(".text.main")))
 	//int n = a;
 
 	//test_write();
-	test_getpid();
-	int j = 0;
+	//test_getpid();
+	//int pid = getpid();
+	//print(pid);
+	//int j = 0;
     while(1) {
-    	if ( j == 10000000) {
+    	write(1,"init",4);
+    	//int aux = getpid();
+    	//if (j == 100000 || j == 1000000)
+    		//test_getpid();
+    	/*if ( pid != aux) {
+    		print(aux);
+    		pid = aux;
     		//test_gettime();
-    	}
-    	++j;
+    	}*/
+    	//++j;
     }
     return 0;	
 }
