@@ -47,12 +47,20 @@ int sys_fork() {
 	// Inherit system data: copy the parent’s task_union to the child. Determine 
 	// whether it is necessary to modify the page table of the parent to access 
 	// the child’s system data. The copy_data function can be used to copy.
+
+	struct list_head * lh = list_first(&freequeue);
+  	union task_union *tsku_fill = (union task_union*)list_head_to_task_struct(lh);
+  	union task_union *tsku_current = (union task_union*)current();    
+  	list_del(lh);
+
 	struct list_head * child_lh = list_first( &freequeue );
+ 	list_del(child_lh);
 	struct task_struct * child_ts = list_head_to_task_struct(child_lh);
  	struct task_struct * father_ts = current();
+ 	union task_union * child_tu = (union task_union*) child_ts;
+ 	union task_union * father_tu = (union task_union*) father_ts;
  	//union task_union *child_tu = (union task_union*)
- 	copy_data(father_ts, child_ts, KERNEL_STACK_SIZE);
- 	list_del(child_lh);
+ 	copy_data(father_ts, child_ts, KERNEL_STACK_SIZE*4);
  	// Initialize field dir_pages_baseAddr with a new directory to store the 
  	// process address space using the allocate_DIR routine.
  	allocate_DIR(child_ts);
@@ -118,12 +126,12 @@ int sys_fork() {
 	// new process has to a) restore its hardware context and b) continue the execution of the
 	// user process, so you must create a routine ret_from_fork which does exactly this. And
 	// use it as the restore point like in the idle process initialization 4.4.
-	union task_union * child_tu = (union task_union*) child_ts; 	//   |              |
+	//union task_union * child_tu = (union task_union*) child_ts; 	//   |              |
 	int addr_esp = (KERNEL_STACK_SIZE-19); 						  	//-19|	  0       | (serveix per que el kernel stack apunti a aquesta direccio emulant )              |
 	int addr_ret_from_fork = (KERNEL_STACK_SIZE-18);				//-18|@ret_from_fork|
- 	child_tu->stack[addr_esp] = 0;								//-17|   @handler   |
- 	child_tu->stack[addr_ret_from_fork] = &ret_from_fork;		//   |11 de save all|
- 	child_ts->kernel_stack = child_tu->stack[addr_esp];			//   |5  de reg hw  |(ss,esp,flags,cd,eip) |
+ 	child_tu->stack[addr_esp] = 0;									//-17|   @handler   |
+ 	child_tu->stack[addr_ret_from_fork] = &ret_from_fork;			//   |11 de save all|
+ 	child_ts->kernel_stack = child_tu->stack[addr_esp];				//   |5  de reg hw  |(ss,esp,flags,cd,eip) |
  	// i) Insert the new process into the ready list: readyqueue. This list will contain all processes
 	// that are ready to execute but there is no processor to run them.
  	list_add_tail(child_lh, child_ts);

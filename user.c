@@ -72,6 +72,9 @@ void print(int number) {
 	itoa(number, str);
 	write(1,str,1);
 }
+void print2(char *aux, int size) {
+	write(1,aux,size);
+} 
 
 int __attribute__ ((__section__(".text.main")))
    main(void)
@@ -91,9 +94,19 @@ int __attribute__ ((__section__(".text.main")))
 	//test_getpid();
 	//int pid = getpid();
 	//print(pid);
+	int pid = fork();
+	if (pid == 0) {
+
+	}
+	else if (pid > 0) {
+
+	}
+	else {
+		print2("error",5);
+	}
 	//int j = 0;
     while(1) {
-    	write(1,"init",4);
+    	//write(1,"init",4);
     	//int aux = getpid();
     	//if (j == 100000 || j == 1000000)
     		//test_getpid();
