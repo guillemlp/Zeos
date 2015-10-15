@@ -12,7 +12,8 @@
 #include <zeos_interrupt.h>
 
 extern struct task_struct * idle_task;
-extern struct task_struct * init_task; 
+extern struct task_struct * init_task;
+extern struct task_struct * fill_task; 
 
 Gate idt[IDT_ENTRIES];
 Register    idtR;
@@ -110,10 +111,14 @@ void keyboard_routine(void) {
         print_key('A');
         task_switch(idle_task);
       }
-      if (aux == 'b') {
+      else if (aux == 'b') {
         print_key('B');
         task_switch(init_task);
 
+      }
+      else if (aux == '1') {
+        print_key('1');
+        task_switch(fill_task);
       }
       else {
         print_key(aux);

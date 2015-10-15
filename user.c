@@ -96,10 +96,14 @@ int __attribute__ ((__section__(".text.main")))
 	//print(pid);
 	int pid = fork();
 	if (pid == 0) {
-
+		while (1) {
+			print2("fill",4);
+		}
 	}
 	else if (pid > 0) {
-
+		while (1) {
+			print2("pare",4);
+		}
 	}
 	else {
 		print2("error",5);
