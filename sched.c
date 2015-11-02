@@ -5,15 +5,17 @@
 #include <sched.h>
 #include <mm.h>
 #include <io.h>
-#include <libc.h> 
+#include <libc.h>  
 
 // global variables
 struct list_head freequeue;
 struct list_head readyqueue;
-struct task_struct * idle_task;
-struct task_struct * init_task;
-struct task_struct * fill_task;
+struct task_struct *idle_task;
+struct task_struct *init_task;
+struct task_struct *fill_task;
 int freePID;
+int quantum_remaining = 0;
+#define DEFAULT_QUANTUM 10
 
 
 /**
@@ -26,8 +28,7 @@ union task_union protected_tasks[NR_TASKS+2]
 union task_union *task = &protected_tasks[1]; /* == union task_union task[NR_TASKS] */
 
 
-struct task_struct *list_head_to_task_struct(struct list_head *l)
-{
+struct task_struct *list_head_to_task_struct(struct list_head *l) {
   return list_entry( l, struct task_struct, list);
 }
 
@@ -35,20 +36,17 @@ extern struct list_head blocked;
 
 
 /* get_DIR - Returns the Page Directory address for task 't' */
-page_table_entry * get_DIR (struct task_struct *t) 
-{
+page_table_entry * get_DIR (struct task_struct *t)  {
 	return t->dir_pages_baseAddr;
 }
 
 /* get_PT - Returns the Page Table address for task 't' */
-page_table_entry * get_PT (struct task_struct *t) 
-{
+page_table_entry * get_PT (struct task_struct *t)  {
 	return (page_table_entry *)(((unsigned int)(t->dir_pages_baseAddr->bits.pbase_addr))<<12);
 }
 
-
-int allocate_DIR(struct task_struct *t) 
-{
+// previos implementation of allocate dir
+int allocate_DIR_old(struct task_struct *t)  {
 	int pos;
 
 	pos = ((int)t-(int)task)/sizeof(union task_union);
@@ -57,7 +55,25 @@ int allocate_DIR(struct task_struct *t)
 
 	return 1;
 }
-//extern int write(int fd, char *buffer, int size);
+// new implementation of allocation dir
+// looks for a free dir
+int allocate_DIR(struct task_struct *t)  {
+	int i;
+	for (i = 0; i < NR_TASKS; ++i) {
+		if (dir_free[i] == 0) { // if == 0 --> found
+			dir_free[i] = 1;
+			t->dir_pages_baseAddr = (page_table_entry*) &dir_pages[i]; 
+			return 1;
+		}
+	}
+	// no more directories empty --> errno??
+	return -1;
+}
+int calculate_dir_pos(struct task_struct *t) {
+
+	return ((int)t->dir_pages_baseAddr - (int)&dir_pages[0])/sizeof(dir_pages[0]);
+}
+
 void cpu_idle(void)
 {
 	__asm__ __volatile__("sti": : :"memory");
@@ -68,11 +84,104 @@ void cpu_idle(void)
 	}
 }
 
+void init_stats(struct stats *s) {
+	s->user_ticks = 0;
+	s->system_ticks = 0;
+	s->blocked_ticks = 0;
+	s->ready_ticks = 0;
+	s->elapsed_total_ticks = get_ticks();
+	s->total_trans = 0;
+	s->remaining_ticks = get_ticks();
+}
+
+void update_stats(unsigned long *v, unsigned long *elapsed) {
+  unsigned long current_ticks;
+  current_ticks=get_ticks();
+  *v += current_ticks - *elapsed;
+  *elapsed=current_ticks;
+}
+
+// Scheduling
+int get_quantum(struct task_struct *t) {
+	return t->total_quantum;
+}
+void set_quantum(struct task_struct *t, int new_quantum) {
+	t->total_quantum = new_quantum;
+}
+void update_sched_data_rr() {
+	quantum_remaining--;
+}
+int needs_sched_rr() {
+	// quantum out --> readyqueue not empty --> need sched
+	if ((quantum_remaining==0) && (!list_empty(&readyqueue))) return 1;
+	// if quantum out ---> assign new quantum(all)
+	if (quantum_remaining==0) quantum_remaining = get_quantum(current());
+	return 0;
+}
+// Function to select the next process to execute, to extract it from the ready queue and to invoke
+// the context switch process. This function should always be executed after updating the state
+// of the current process (after calling function update_process_state_rr).
+// Update the readyqueue, if current process is not the idle process, by inserting the current
+// process at the end of the readyqueue.
+// – Extract the first process of the readyqueue, which will become the current process;
+// – And perform a context switch to this selected process. Remember that when a process
+// returns to the execution stage after a context switch, its quantum ticks must be restored.
+void sched_next_rr() {
+
+	struct list_head *e;
+	struct task_struct *t;
+
+	e = list_first(&readyqueue);
+	if (e) {
+		list_del(e);
+		t = list_head_to_task_struct(e);
+	}
+	else { // ready queue empty ---> idle
+		t = idle_task;
+	}
+	t->state=ST_RUN;
+	quantum_remaining=get_quantum(t); 
+
+
+	update_stats(&(current()->p_stats.system_ticks), &(current()->p_stats.elapsed_total_ticks));
+	update_stats(&(t->p_stats.ready_ticks), &(t->p_stats.elapsed_total_ticks));
+	t->p_stats.total_trans++;
+
+	task_switch((union task_union*)t);
+
+}
+// If the current state is not running, then this function deletes the process from its current queue.
+// If the new state of the process is not running, then this function inserts the process into a suitable queue 
+// If the new state of the process is running, then the queue parameter shoud be NULL.
+void update_process_state_rr(struct task_struct *t, struct list_head *dest) {
+	if (t->state != ST_RUN) list_del(&(t->list));
+	if (dest != NULL) {
+		list_add_tail(&(t->list), dest);
+		if (dest != &readyqueue) t->state = ST_BLOCKED;
+		else {
+			t->state = ST_READY;
+			update_stats(&(current()->p_stats.system_ticks), &(current()->p_stats.elapsed_total_ticks));
+		}
+		
+	}
+	else t->state = ST_RUN;	
+
+}  
+
+void schedule() {
+	update_sched_data_rr();
+	if (needs_sched_rr()) {
+		update_process_state_rr(current(), &readyqueue);
+		sched_next_rr();
+	}
+}
+
+
 void init_idle (void) {
 	// Get an available task_union from the freequeue 
 	// to contain the characteristics of this process
-	struct list_head * first = list_first( &freequeue );
-	struct task_struct * idletask = list_head_to_task_struct(first);
+	struct list_head *first = list_first( &freequeue );
+	struct task_struct *idletask = list_head_to_task_struct(first);
 	list_del( first ); 
 	// Assign PID 0 to the process
 	idletask->PID = 0;
@@ -98,13 +207,48 @@ void init_idle (void) {
 	// easily the task_struct of the idle process.
 	idle_task = idletask;
 
+	// set quantum
+	idletask->total_quantum = DEFAULT_QUANTUM;
+
+	// init stats
+	init_stats(&idletask->p_stats);
+
+}
+
+void init_task2(void)
+{
+  struct list_head *l = list_first(&freequeue);
+  list_del(l);
+  struct task_struct *c = list_head_to_task_struct(l);
+  union task_union *uc = (union task_union*)c;
+
+  c->PID=1;
+
+  c->total_quantum=DEFAULT_QUANTUM;
+
+  c->state=ST_RUN;
+
+  quantum_remaining=c->total_quantum;
+
+  init_stats(&c->p_stats);
+
+  allocate_DIR(c);
+
+  set_user_pages(c);
+
+  tss.esp0=(DWord)&(uc->stack[KERNEL_STACK_SIZE]);
+
+  set_cr3(c->dir_pages_baseAddr);
+
+  freePID = 2;
+  init_task = c;
 }
 
 void init_task1(void) {
 	// Get an available task_union from the freequeue 
 	// to contain the characteristics of this process
-	struct list_head * init_lh = list_first( &freequeue );
-	struct task_struct * inittask = list_head_to_task_struct(init_lh);
+	struct list_head *init_lh = list_first( &freequeue );
+	struct task_struct *inittask = list_head_to_task_struct(init_lh);
 	list_del( init_lh ); 
 	// Assign PID 1 to the process
 	inittask->PID = 1;
@@ -126,9 +270,20 @@ void init_task1(void) {
 	// Set its page directory as the current page directory in the system,
 	// by using the set_cr3 function (see file mm.c).
 	set_cr3(inittask->dir_pages_baseAddr);
+
 	freePID = 2;
 	init_task = inittask;
+
+	// set quantum 
+	inittask->total_quantum=DEFAULT_QUANTUM;
+
+	init_stats(&inittask->p_stats);
+
+	quantum_remaining=inittask->total_quantum;
+
+	inittask->state = ST_RUN;
 }
+
 void inner_task_switch(union task_union *t) {
 	// Update the TSS to make it point to the new_task system stack.
 	tss.esp0 = &t->stack[KERNEL_STACK_SIZE];
@@ -181,6 +336,8 @@ void init_sched(){
 	int i;
 	for (i = 0; i < NR_TASKS; ++i) {
 		list_add_tail(&(task[i].task.list), &freequeue);
+		// we used this loop for initialize the dir_free
+		dir_free[i] = 0;
 	}
 
 	// ready queue
@@ -188,6 +345,7 @@ void init_sched(){
 
 	// initialization readyqueue
 	INIT_LIST_HEAD( &readyqueue );
+
 }
 
 struct task_struct* current() {

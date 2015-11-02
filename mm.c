@@ -18,7 +18,9 @@ Register    gdtR;
 
 /* PAGING */
 /* Variables containing the page directory and the page table */
-  
+
+// vector counter for directories
+int dir_free[NR_TASKS];  
 page_table_entry dir_pages[NR_TASKS][TOTAL_PAGES]
   __attribute__((__section__(".data.task")));
 

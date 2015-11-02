@@ -75,34 +75,20 @@ void print(int number) {
 void print2(char *aux, int size) {
 	write(1,aux,size);
 } 
-
-int __attribute__ ((__section__(".text.main")))
-   main(void)
-{
-   /* Next line, tries to move value 0 to CR3 register. This register is a privileged one, and so it will raise an exception */
-   /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */
-
-	//long count, acum;
-	//count = 75;
-	//acum = 0;
-	//acum = outer(count);
-	//int num = add1(1,2);
-	//int a = add2(2,3);
-	//int n = a;
-
-	//test_write();
-	//test_getpid();
-	//int pid = getpid();
-	//print(pid);
+void test_fork() {
 	int pid = fork();
 	if (pid == 0) {
+		exit();
 		while (1) {
 			print2("fill",4);
+			//exit();
 		}
 	}
 	else if (pid > 0) {
-		while (1) {
-			print2("pare",4);
+		int i = 0;
+		while (i < 50000000) {
+			//print2("pare",4);
+			++i;
 		}
 	}
 	else {
@@ -120,6 +106,22 @@ int __attribute__ ((__section__(".text.main")))
     		//test_gettime();
     	}*/
     	//++j;
+    		int pid = getpid();
+    		print(pid);
+    }
+}
+
+int __attribute__ ((__section__(".text.main")))
+   main(void)
+{
+   /* Next line, tries to move value 0 to CR3 register. This register is a privileged one, and so it will raise an exception */
+   /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */
+
+	
+	print2("Funca",5);
+    while(1) {
+    	//exit();
+    	test_fork();
     }
     return 0;	
 }

@@ -7,6 +7,7 @@
 
 #include <list.h>
 #include <types.h>
+#include <stats.h> 
 #include <mm_address.h>
 
 #define NR_TASKS      10
@@ -19,12 +20,17 @@ struct task_struct {
   page_table_entry * dir_pages_baseAddr;
   struct list_head list; /* pointer list_head structure */
   void * kernel_stack; /* to keep the position of the stack where we stored the ebp*/
+  int total_quantum;
+  enum state_t state;
+  struct stats p_stats;		/* Process stats */
 };
 
 union task_union {
   struct task_struct task;
   unsigned long stack[KERNEL_STACK_SIZE];    /* pila de sistema, per procés */
 };
+
+
 
 extern union task_union protected_tasks[NR_TASKS+2];
 extern union task_union *task; /* Vector de tasques */
@@ -59,5 +65,9 @@ void sched_next_rr();
 void update_process_state_rr(struct task_struct *t, struct list_head *dest);
 int needs_sched_rr();
 void update_sched_data_rr();
+int get_quantum(struct task_struct *t);
+void set_quantum(struct task_struct *t, int new_quantum);
+
+void update_stats(unsigned long *v, unsigned long *elapsed);
 
 #endif  /* __SCHED_H__ */
