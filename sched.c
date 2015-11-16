@@ -10,7 +10,7 @@
 // global variables
 struct list_head freequeue;
 struct list_head readyqueue;
-struct semaphore_struct list_sem[20];
+struct sem_struct list_sem[20];
 
 struct task_struct *idle_task;
 struct task_struct *init_task;

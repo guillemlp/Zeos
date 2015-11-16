@@ -20,6 +20,7 @@
 
 extern struct list_head freequeue;
 extern struct list_head readyqueue;
+extern struct sem_struct list_sem[20];
 extern int freePID;
 extern struct task_struct * fill_task; 
 extern int quantum_remaining;
@@ -236,7 +237,12 @@ int sys_write(int fd, char *buffer, int size) {
 		return num;
 	}
 }
-int sys_sem_init() {
+int sys_sem_init(int n_sem, unsigned int value) {
+	if (n_sem < 0 || n_sem >= 20) return -12;
+	if (list_sem[n_sem].owner != 0) return -1;
+	list_sem[n_sem].owner = current()->PID;
+	list_sem[n_sem].counter = value;
+	INIT_LIST_HEAD( &list_sem[n_sem].blocked );
 	return 0;
 }
 int sys_sem_wait() {

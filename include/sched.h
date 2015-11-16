@@ -30,8 +30,9 @@ union task_union {
   unsigned long stack[KERNEL_STACK_SIZE];    /* pila de sistema, per procés */
 };
 
-struct semaphore_struct {
-	int cont;  // counter of
+struct sem_struct {
+	int owner; // PID owner
+	int counter;  // counter of
 	struct list_head blocked;
 };
 

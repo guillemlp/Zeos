@@ -114,6 +114,8 @@ int strlen(char *a) {
 
     return i;
 }
+
+
 int sem_init(int n_sem, unsigned int value) {
     //n_sem: identifier of the sempahore to be initialized
     //value: initial value of the counter of the sempahore
