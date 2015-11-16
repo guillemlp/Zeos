@@ -31,6 +31,19 @@ void exit() {
         :"a" (1));
 }
 
+int clone(void (*function)(void), void *stack) {
+    int ret = -1;
+    asm("int $0x80;"
+        : "=r" (ret)
+        : "a" (19), "b"(function), "c" (stack) );
+    
+    if (ret >= 0) return ret;
+    else {
+        errno = ret;
+        return -1; 
+    }
+}
+
 int fork(void) {
     int ret = -1;
     asm("movl $2, %%eax;"

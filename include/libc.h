@@ -8,6 +8,10 @@
 
 #include <stats.h>
 
+int clone(void (*function)(void),void *stack);
+
+int gettime();
+
 int write(int fd, char *buffer, int size);
 
 void itoa(int a, char *b);

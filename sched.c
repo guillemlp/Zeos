@@ -10,6 +10,7 @@
 // global variables
 struct list_head freequeue;
 struct list_head readyqueue;
+struct list_head blocked;
 struct task_struct *idle_task;
 struct task_struct *init_task;
 struct task_struct *fill_task;
@@ -60,8 +61,8 @@ int allocate_DIR_old(struct task_struct *t)  {
 int allocate_DIR(struct task_struct *t)  {
 	int i;
 	for (i = 0; i < NR_TASKS; ++i) {
-		if (dir_free[i] == 0) { // if == 0 --> found
-			dir_free[i] = 1;
+		if (contDir[i] == 0) { // if == 0 --> found
+			contDir[i] = 1;
 			t->dir_pages_baseAddr = (page_table_entry*) &dir_pages[i]; 
 			return 1;
 		}
@@ -325,26 +326,23 @@ void task_switch(union task_union *t) {
 
 
 void init_sched(){
-
-	// free queue declaration
-	//extern struct list_head freequeue;
 	
 	// initialization freequeue
 	INIT_LIST_HEAD( &freequeue );
+
+	// initialization blocked
+	INIT_LIST_HEAD( &blocked );
+
+	// initialization readyqueue
+	INIT_LIST_HEAD( &readyqueue );
 
 	// add all process structs
 	int i;
 	for (i = 0; i < NR_TASKS; ++i) {
 		list_add_tail(&(task[i].task.list), &freequeue);
-		// we used this loop for initialize the dir_free
-		dir_free[i] = 0;
+		// we used this loop for initialize the contDir
+		contDir[i] = 0;
 	}
-
-	// ready queue
-	//struct list_head readyqueue;
-
-	// initialization readyqueue
-	INIT_LIST_HEAD( &readyqueue );
 
 }
 

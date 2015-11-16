@@ -49,6 +49,8 @@ void sys_exit() {
 		free_frame(get_frame(current_PT,PAG_LOG_INIT_DATA+i));
 		del_ss_pag(current_PT, PAG_LOG_INIT_DATA+i);
 	}
+	int pos = calculate_dir_pos(current());
+ 	contDir[pos]--;
 	// free task struct
 	list_add_tail(&(current()->list), &freequeue);
 	current()->PID=-1;	
@@ -58,6 +60,53 @@ void sys_exit() {
 
 int ret_from_fork() {
 	return 0;
+}
+int sys_clone(void (*function)(void), void *stack) {
+	struct list_head *child_lh = NULL;
+	union task_union *child_tu, *father_tu;
+	struct task_struct *child_ts, *father_ts;
+	// mirem si pcb's lliures
+	if (list_empty(&freequeue)) return -1;
+	
+	// obtenim pcb lliure
+	child_lh = list_first(&freequeue);
+ 	list_del(child_lh);
+ 	
+ 	// task struct i task union fill
+ 	child_ts = list_head_to_task_struct(child_lh);
+	child_tu = (union task_union*) list_head_to_task_struct(child_lh);
+ 	// task struct i tasc union fill
+ 	father_ts = current();
+ 	father_tu = (union task_union*) current();
+
+ 	// copiem data apre fill
+ 	copy_data(father_tu, child_tu, sizeof(union task_union));
+
+ 	// modifiquem punt de tornada i stack usuari i 
+  	child_tu->stack[KERNEL_STACK_SIZE-18] = &ret_from_fork;
+  	child_tu->stack[KERNEL_STACK_SIZE-19] = 0;
+  	child_ts->kernel_stack = &child_tu->stack[KERNEL_STACK_SIZE-19];
+  	child_tu->stack[KERNEL_STACK_SIZE-5] = function;
+ 	child_tu->stack[KERNEL_STACK_SIZE-2] = stack;
+
+ 	// assignem nou pid
+ 	int child_pid = freePID;
+ 	child_ts->PID = child_pid;
+ 	freePID = freePID + 1;
+
+ 	// ++cont dir
+ 	int pos = calculate_dir_pos(father_ts);
+ 	contDir[pos]++;
+ 	
+
+
+	// estat fill
+	child_ts->state = ST_READY;
+	child_ts->total_quantum = 10;
+	list_add_tail(&(child_ts->list), &readyqueue);
+
+	return child_pid;
+
 }
 int sys_fork() {
 	struct list_head *child_lh = NULL;
@@ -207,7 +256,4 @@ int sys_get_stats(int pid, struct stats *st)
   return -12; /*ESRCH */
 }
 
-int sys_clone() {
-	return 0;
-}
 

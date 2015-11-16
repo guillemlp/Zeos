@@ -110,6 +110,18 @@ void test_fork() {
     		print(pid);
     }
 }
+void nothing() {
+	char str[12] = "Inside clone";
+	print2(str, strlen(str));
+	exit();
+}
+
+void test_clone() {
+	char stack[100];
+	clone(nothing,stack);
+	//char str[12] = "Inside clone2";
+	//print2(str, strlen(str));
+}
 
 int __attribute__ ((__section__(".text.main")))
    main(void)
@@ -118,10 +130,11 @@ int __attribute__ ((__section__(".text.main")))
    /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */
 
 	
-	print2("Funca",5);
+	//print2("Funca",5);
+	test_clone();
     while(1) {
     	//exit();
-    	test_fork();
+    	//test_fork();
     }
     return 0;	
 }

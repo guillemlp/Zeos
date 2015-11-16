@@ -16,7 +16,7 @@
 extern Byte phys_mem[TOTAL_PAGES];
 
 // vector counter
-extern int dir_free[NR_TASKS];
+extern int contDir[NR_TASKS];
 extern page_table_entry dir_pages[NR_TASKS][TOTAL_PAGES];
 
 int init_frames( void );
