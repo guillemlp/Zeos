@@ -238,25 +238,26 @@ int sys_write(int fd, char *buffer, int size) {
 	}
 }
 int sys_sem_init(int n_sem, unsigned int value) {
-	if (n_sem < 0 || n_sem >= 20) return -12;
-	if (list_sem[n_sem].owner != 0) return -1;
+	if (n_sem < 0 || n_sem >= 20 || list_sem[n_sem].owner <= 0) return -1;
 	list_sem[n_sem].owner = current()->PID;
 	list_sem[n_sem].counter = value;
 	INIT_LIST_HEAD( &list_sem[n_sem].blocked );
 	return 0;
 }
 int sys_sem_wait(int n_sem) {
-	if (n_sem < 0 || n_sem >= 20) return -12;
-	if (list_sem[n_sem].owner == 0) return -1; // or it is destroyed
-	if (list_sem[n_sem].counter <= 0) {
+	if (n_sem < 0 || n_sem >= 20 || list_sem[n_sem].owner <= 0) return -1; // or it is destroyed
+	list_sem[n_sem].counter--;
+	if (list_sem[n_sem].counter < 0) {
 		list_add_tail(&current()->list, &list_sem[n_sem].blocked);
-	}
-	else {
-		list_sem[n_sem].counter--;
 	}
 	return 0;
 }
-int sys_sem_signal() {
+int sys_sem_signal(int n_sem) {
+	if (n_sem < 0 || n_sem >= 20) return -12;
+	list_sem[n_sem].counter++;
+	if (list_sem[n_sem].counter <= 0) {
+		list_add_tail(&current()->list, &readyqueue);
+	}
 	return 0;
 }
 int sys_sem_destroy() {
