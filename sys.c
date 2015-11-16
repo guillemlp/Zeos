@@ -245,7 +245,15 @@ int sys_sem_init(int n_sem, unsigned int value) {
 	INIT_LIST_HEAD( &list_sem[n_sem].blocked );
 	return 0;
 }
-int sys_sem_wait() {
+int sys_sem_wait(int n_sem) {
+	if (n_sem < 0 || n_sem >= 20) return -12;
+	if (list_sem[n_sem].owner == 0) return -1; // or it is destroyed
+	if (list_sem[n_sem].counter <= 0) {
+		list_add_tail(&current()->list, &list_sem[n_sem].blocked);
+	}
+	else {
+		list_sem[n_sem].counter--;
+	}
 	return 0;
 }
 int sys_sem_signal() {
