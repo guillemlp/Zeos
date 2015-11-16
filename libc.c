@@ -114,6 +114,18 @@ int strlen(char *a) {
 
     return i;
 }
+int sem_init(int n_sem, unsigned int value) {
+    return 0;
+}
+int sem_wait(int n_sem) {
+    return 0;
+}
+int sem_signal(int n_sem) {
+    return 0;
+}
+int sem_destroy(int n_sem) {
+    return 0;
+}
 
 int get_stats(int pid, struct stats *st)
 {

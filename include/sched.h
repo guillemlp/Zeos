@@ -30,6 +30,11 @@ union task_union {
   unsigned long stack[KERNEL_STACK_SIZE];    /* pila de sistema, per procés */
 };
 
+struct semaphore_struct {
+	int cont;  // counter of 
+	struct list_head blocked;
+};
+
 
 
 extern union task_union protected_tasks[NR_TASKS+2];

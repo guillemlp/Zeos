@@ -236,6 +236,18 @@ int sys_write(int fd, char *buffer, int size) {
 		return num;
 	}
 }
+int sys_sem_init() {
+	return 0;
+}
+int sys_sem_wait() {
+	return 0;
+}
+int sys_sem_signal() {
+	return 0;
+}
+int sys_sem_destroy() {
+	return 0;
+}
 
 int sys_get_stats(int pid, struct stats *st)
 {
