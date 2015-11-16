@@ -31,7 +31,7 @@ union task_union {
 };
 
 struct semaphore_struct {
-	int cont;  // counter of 
+	int cont;  // counter of
 	struct list_head blocked;
 };
 

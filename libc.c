@@ -115,16 +115,62 @@ int strlen(char *a) {
     return i;
 }
 int sem_init(int n_sem, unsigned int value) {
-    return 0;
+    //n_sem: identifier of the sempahore to be initialized
+    //value: initial value of the counter of the sempahore
+    //returns -1 if error, 0 if OK
+    int ret = -1;
+    asm("int $0x80;"
+        : "=r" (ret)
+        : "a" (21), "b"(n_sem), "c" (value) );
+    
+    if (ret >= 0) return ret;
+    else {
+        errno = ret;
+        return -1; 
+    }
+
 }
 int sem_wait(int n_sem) {
-    return 0;
+    //n_sem: identifier of the sempahore to be initialized
+    //returns -1 if error, 0 if OK
+    int ret = -1;
+    asm("int $0x80;"
+        : "=r" (ret)
+        : "a" (21), "b"(n_sem) );
+    
+    if (ret >= 0) return ret;
+    else {
+        errno = ret;
+        return -1; 
+    }
 }
 int sem_signal(int n_sem) {
-    return 0;
+    //n_sem: identifier of the sempahore to be initialized
+    //returns -1 if error, 0 if OK
+    int ret = -1;
+    asm("int $0x80;"
+        : "=r" (ret)
+        : "a" (21), "b"(n_sem) );
+    
+    if (ret >= 0) return ret;
+    else {
+        errno = ret;
+        return -1; 
+    }
 }
 int sem_destroy(int n_sem) {
-    return 0;
+    //n_sem: identifier of the sempahore to be initialized
+    //returns -1 if error, 0 if OK
+    int ret = -1;
+    asm("int $0x80;"
+        : "=r" (ret)
+        : "a" (21), "b"(n_sem) );
+    
+    if (ret >= 0) return ret;
+    else {
+        errno = ret;
+        return -1; 
+    }
 }
 
 int get_stats(int pid, struct stats *st)

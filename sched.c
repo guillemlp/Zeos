@@ -331,9 +331,6 @@ void init_sched(){
 	// initialization freequeue
 	INIT_LIST_HEAD( &freequeue );
 
-	// initialization blocked
-	INIT_LIST_HEAD( &blocked );
-
 	// initialization readyqueue
 	INIT_LIST_HEAD( &readyqueue );
 
