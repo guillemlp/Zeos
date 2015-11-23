@@ -78,7 +78,7 @@ void print2(char *aux, int size) {
 void test_fork() {
 	int pid = fork();
 	if (pid == 0) {
-		exit();
+		//exit();
 		while (1) {
 			print2("fill",4);
 			//exit();
@@ -86,8 +86,8 @@ void test_fork() {
 	}
 	else if (pid > 0) {
 		int i = 0;
-		while (i < 50000000) {
-			//print2("pare",4);
+		while (1) {
+			print2("pare",4);
 			++i;
 		}
 	}
@@ -115,10 +115,31 @@ void nothing() {
 	print2(str, strlen(str));
 	exit();
 }
+void thread1() {
+	//sem_wait(0);
+	char str[12] = "Ping";
+	print2(str, strlen(str));
+	exit();
+}
+void thread2() {
+	//sem_wait(1);
+	char str[12] = "Pong";
+	print2(str, strlen(str));
+	//while (1) {;}
+	exit();
+}
 
 void test_clone() {
-	char stack[100];
-	clone(nothing,stack);
+	char stack1[100];
+	char stack2[100];
+	sem_init(0,0);
+	sem_init(1,0);
+	//fork();
+	//clone(nothing,stack);
+	clone(thread1, &stack1[99]);
+	clone(thread2, &stack2[99]);
+	sem_signal(0);
+	sem_signal(1);
 	//char str[12] = "Inside clone2";
 	//print2(str, strlen(str));
 }
@@ -132,6 +153,7 @@ int __attribute__ ((__section__(".text.main")))
 	
 	//print2("Funca",5);
 	test_clone();
+    //test_fork();
     while(1) {
     	//exit();
     	//test_fork();

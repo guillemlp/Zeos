@@ -40,18 +40,19 @@ int sys_getpid() {
 	return current()->PID;
 }
 void sys_exit() {
-	int i;
-	// substract 1 to counter dir vector
-	//int pos = (&(current()->dir_pages_baseAddr)-(int)task)/sizeof(union task_union); 
-	//sys_write_console(itoa((current()->dir_pages_baseAddr)),32);
-	page_table_entry *current_PT = get_PT(current());
-	// deallocate the prop physical page
-	for (i=0; i<NUM_PAG_DATA; i++) {
-		free_frame(get_frame(current_PT,PAG_LOG_INIT_DATA+i));
-		del_ss_pag(current_PT, PAG_LOG_INIT_DATA+i);
-	}
 	int pos = calculate_dir_pos(current());
- 	contDir[pos]--;
+	if (--contDir[pos] == 0) {
+		int i;
+		// substract 1 to counter dir vector
+		//int pos = (&(current()->dir_pages_baseAddr)-(int)task)/sizeof(union task_union); 
+		//sys_write_console(itoa((current()->dir_pages_baseAddr)),32);
+		page_table_entry *current_PT = get_PT(current());
+		// deallocate the prop physical page
+		for (i=0; i<NUM_PAG_DATA; i++) {
+			free_frame(get_frame(current_PT,PAG_LOG_INIT_DATA+i));
+			del_ss_pag(current_PT, PAG_LOG_INIT_DATA+i);
+		}
+	}
 	// free task struct
 	list_add_tail(&(current()->list), &freequeue);
 	current()->PID=-1;	
@@ -253,14 +254,23 @@ int sys_sem_wait(int n_sem) {
 	return 0;
 }
 int sys_sem_signal(int n_sem) {
-	if (n_sem < 0 || n_sem >= 20) return -12;
+	if (n_sem < 0 || n_sem >= 20 || list_sem[n_sem].owner <= 0) return -1;
 	list_sem[n_sem].counter++;
 	if (list_sem[n_sem].counter <= 0) {
 		list_add_tail(&current()->list, &readyqueue);
 	}
 	return 0;
 }
-int sys_sem_destroy() {
+int sys_sem_destroy(int n_sem) {
+	if (n_sem < 0 || n_sem >= 20 || list_sem[n_sem].owner <= 0) return -1;
+	if (list_sem[n_sem].owner != current()->PID) return -1; // you are not the owner
+	// at this position it is guaranteed that you are the owner
+	if (!list_empty(&list_sem[n_sem].blocked)) {
+		while (!list_empty(&list_sem[n_sem].blocked)) {
+			list_add_tail(list_first(&list_sem[n_sem].blocked), &readyqueue);
+		}
+		return -1;
+	}
 	return 0;
 }
 
