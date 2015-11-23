@@ -9,8 +9,12 @@
 
 // global variables
 struct list_head freequeue;
-struct list_head readyqueue;
-struct sem_struct list_sem[20];
+struct list_head readyqueue;    
+struct list_head keyboardqueue; // processes blocked by the keyboard
+
+// structs
+char pressed_keys[50];
+struct sem_struct list_sem[20]; // list semaphores
 
 struct task_struct *idle_task;
 struct task_struct *init_task;
@@ -217,8 +221,7 @@ void init_idle (void) {
 
 }
 
-void init_task2(void)
-{
+void init_task2(void) {
   struct list_head *l = list_first(&freequeue);
   list_del(l);
   struct task_struct *c = list_head_to_task_struct(l);
@@ -334,7 +337,10 @@ void init_sched(){
 	// initialization readyqueue
 	INIT_LIST_HEAD( &readyqueue );
 
-	// add all process structs
+	// initialization keyboardqueue
+	INIT_LIST_HEAD( &keyboardqueue );	
+
+	// add all process structs to frequeue
 	int i;
 	for (i = 0; i < NR_TASKS; ++i) {
 		list_add_tail(&(task[i].task.list), &freequeue);
