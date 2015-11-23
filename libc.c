@@ -33,6 +33,23 @@ int fork(void) {
     }
 }
 
+// 3
+// read() attempts to read up to ’count’ bytes from file descriptor ’fd’ into
+// the buffer starting at ’buf’.
+int read (int fd, char *buf, int count) {
+    int ret = -1;
+    asm("movl $3, %%eax;"
+        "int $0x80;"
+        : "=r" (ret)
+        : "b"(fd), "c" (buf), "d" (count) );
+    
+    if (ret >= 0) return ret;
+    else {
+        errno = ret;
+        return -1; 
+    }
+}
+
 // 4
 int write(int fd, char *buffer, int size) {
     int ret = -1;

@@ -20,25 +20,13 @@
 
 extern struct list_head freequeue;
 extern struct list_head readyqueue;
+extern struct list_head keyboardqueue;
+extern struct keyboard_buffer key_buffer;
 extern struct sem_struct list_sem[20];
 extern int freePID;
 extern struct task_struct * fill_task; 
 extern int quantum_remaining;
 
-int check_fd(int fd, int permissions)
-{
-  if (fd!=1) return -9; /*EBADF*/
-  if (permissions!=ESCRIPTURA) return -13; /*EACCES*/
-  return 0;
-}
-
-int sys_ni_syscall() {
-	return -38; /*ENOSYS*/
-}
-
-int sys_getpid() {
-	return current()->PID;
-}
 void sys_exit() {
 	int pos = calculate_dir_pos(current());
 	if (--contDir[pos] == 0) {
@@ -59,6 +47,22 @@ void sys_exit() {
 	//restart execution of the next process
 	sched_next_rr();
 }
+
+int check_fd(int fd, int permissions)
+{
+  if (fd!=1) return -9; /*EBADF*/
+  if (permissions!=ESCRIPTURA) return -13; /*EACCES*/
+  return 0;
+}
+
+int sys_ni_syscall() {
+	return -38; /*ENOSYS*/
+}
+
+int sys_getpid() {
+	return current()->PID;
+}
+
 
 int ret_from_fork() {
 	return 0;
@@ -197,6 +201,30 @@ int sys_gettime() {
 		task_switch(idle_task);
 	}*/
 	return zeos_ticks;
+}
+
+int sys_read(int fd, char *buf, int count) {
+	// check parameters
+	int check = check_fd(fd,LECTURA);
+	if (check < 0) return check;
+	if (count == 0) return 0;
+	if (count < 0) return -9; // bad params  EBADF
+	if (buf == 0) return -14; // EFAULT Bad address
+	if (!list_empty(&keyboardqueue)) {
+		list_add_tail(&current()->list, &keyboardqueue);
+		sched_next_rr();
+	}
+	if (can_read(count)) {
+		// copy all copy_to_user(void *start, void *dest, int size);
+		copy(buf, count);
+		return count;
+	}
+	if (is_full()) {
+		// copy the whole content
+		copy_all(buf);
+	}
+	list_add(&current()->list, &keyboardqueue);
+	sched_next_rr();
 }
 
 // Write system call Service routine

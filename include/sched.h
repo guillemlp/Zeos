@@ -12,6 +12,7 @@
 
 #define NR_TASKS      10
 #define KERNEL_STACK_SIZE	1024
+#define MAX_PRESSED_KEYS 50 
 
 enum state_t { ST_RUN, ST_READY, ST_BLOCKED };
 
@@ -23,6 +24,13 @@ struct task_struct {
   int total_quantum;
   enum state_t state;
   struct stats p_stats;		/* Process stats */
+};
+
+struct keyboard_buffer {
+	char pressed_keys[MAX_PRESSED_KEYS];
+	int punter_read;
+	int punter_write;
+	int write_keys;
 };
 
 union task_union {
@@ -75,5 +83,13 @@ int get_quantum(struct task_struct *t);
 void set_quantum(struct task_struct *t, int new_quantum);
 
 void update_stats(unsigned long *v, unsigned long *elapsed);
+ 
+// headers keyboard buffer 
+void init_keyboard_buffer();
+int can_read(int count);
+int remaining();
+int is_full();
+void copy_all(char *buf);
+void copy(char *buf, int cont);
 
 #endif  /* __SCHED_H__ */

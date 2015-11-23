@@ -13,7 +13,7 @@ struct list_head readyqueue;
 struct list_head keyboardqueue; // processes blocked by the keyboard
 
 // structs
-char pressed_keys[50];
+struct keyboard_buffer key_buffer;
 struct sem_struct list_sem[20]; // list semaphores
 
 struct task_struct *idle_task;
@@ -348,6 +348,8 @@ void init_sched(){
 		contDir[i] = 0;
 	}
 
+	init_keyboard_buffer();
+
 }
 
 struct task_struct* current() {
@@ -360,3 +362,47 @@ struct task_struct* current() {
 	return (struct task_struct*)(ret_value&0xfffff000);
 }
 
+// keyboard queue operations
+
+void init_keyboard_buffer() {
+	key_buffer.punter_read = 0;
+	key_buffer.punter_write = 0;
+	key_buffer.write_keys = 0;
+}
+int can_read(int count) {
+	// return 1 if can read
+	// o otherwise
+	int restants = MAX_PRESSED_KEYS - key_buffer.write_keys;
+	return restants >= count;
+}
+int remaining() {
+	return MAX_PRESSED_KEYS - key_buffer.write_keys;
+}
+int is_full() {
+	return key_buffer.write_keys == MAX_PRESSED_KEYS;
+}
+void copy_all(char *buf) {
+	int inici = key_buffer.punter_read;
+	int inici_num = MAX_PRESSED_KEYS - inici;
+	copy_to_user(&key_buffer.pressed_keys[inici], buf, inici_num);
+	copy_to_user(&key_buffer.pressed_keys[0], buf+(inici_num), inici);
+	key_buffer.punter_read = 0;
+	key_buffer.punter_write = 0;
+}
+void copy(char *buf, int cont) {
+	int inici = key_buffer.punter_read;
+	int inici_num = MAX_PRESSED_KEYS - inici;
+	if (inici_num >= cont) {
+		copy_to_user(&key_buffer.pressed_keys[inici], buf, cont);
+		key_buffer.punter_read += cont;
+		if (key_buffer.punter_read == MAX_PRESSED_KEYS) {
+			key_buffer.punter_read = 0;
+		}
+	}
+	else {
+		copy_to_user(&key_buffer.pressed_keys[inici], buf, inici_num);
+		int restants = cont-inici_num;
+		key_buffer.punter_read = restants;
+		copy_to_user(&key_buffer.pressed_keys[0], buf+(inici_num), restants);
+	}
+}
