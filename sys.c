@@ -50,9 +50,10 @@ void sys_exit() {
 
 int check_fd(int fd, int permissions)
 {
-  if (fd!=1) return -9; /*EBADF*/
-  if (permissions!=ESCRIPTURA) return -13; /*EACCES*/
-  return 0;
+  	if (fd!=0 && fd != 1) return -9; /*EBADF*/
+  	if (fd == 1 && permissions!=ESCRIPTURA) return -13; /*EACCES*/
+	if (fd == 0 && permissions!=LECTURA) return -13; /*EACCES*/
+  	return 0;
 }
 
 int sys_ni_syscall() {
@@ -205,20 +206,24 @@ int sys_gettime() {
 
 int sys_read(int fd, char *buf, int count) {
 	// check parameters
+	//sys_write(1,"before0",7);
 	int check = check_fd(fd,LECTURA);
 	if (check < 0) return check;
 	if (count == 0) return 0;
 	if (count < 0) return -9; // bad params  EBADF
 	if (buf == 0) return -14; // EFAULT Bad address
+	sys_write(1,"before0->",9);
 	if (!list_empty(&keyboardqueue)) {
 		list_add_tail(&current()->list, &keyboardqueue);
 		sched_next_rr();
 	}
+	sys_write(1,"before1->",9);
 	if (can_read(count)) {
 		// copy all copy_to_user(void *start, void *dest, int size);
 		copy(buf, count);
 		return count;
 	}
+	sys_write(1,"before2->",9);
 	if (is_full()) {
 		// copy the whole content
 		copy_all(buf);

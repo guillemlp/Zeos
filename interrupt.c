@@ -14,6 +14,7 @@
 extern struct task_struct * idle_task;
 extern struct task_struct * init_task;
 extern struct task_struct * fill_task; 
+extern struct keyboard_buffer key_buffer;
 
 Gate idt[IDT_ENTRIES];
 Register    idtR;
@@ -107,22 +108,9 @@ void keyboard_routine(void) {
   if ((c & 0x80) == 0) { // make
     char aux = char_map[c&0x7F];
     if (aux != '\0') {
-      if (aux == 'a') {
-        print_key('A');
-        task_switch(idle_task);
-      }
-      else if (aux == 'b') {
-        print_key('B');
-        task_switch(init_task);
-
-      }
-      else if (aux == '1') {
-        print_key('1');
-        task_switch(fill_task);
-      }
-      else {
         print_key(aux);
-      }
+        add_key(aux);
+        //print_buffer(6);
     }
     else {
       print_key('C');
@@ -145,3 +133,23 @@ void clock_routine() {
 
 
 
+
+
+/* antic case en keyboard
+
+      if (aux == 'a') {
+        print_key('A');
+        task_switch(idle_task);
+      }
+      else if (aux == 'b') {
+        print_key('B');
+        //task_switch(init_task);
+
+      }
+      else if (aux == '1') {
+        print_key('1');
+        task_switch(fill_task);
+      }
+      else {
+
+*/

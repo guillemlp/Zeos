@@ -86,6 +86,8 @@ void update_stats(unsigned long *v, unsigned long *elapsed);
  
 // headers keyboard buffer 
 void init_keyboard_buffer();
+int add_key(char c);
+void print_buffer(int n);
 int can_read(int count);
 int remaining();
 int is_full();

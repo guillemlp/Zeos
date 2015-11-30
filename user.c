@@ -45,6 +45,7 @@ long outer(long n)
 int add1(int par1, int par2) {
 	return par1+par2;
 }
+
 /*
 //no input/ouput inline
 int add2(int par1, int par2) {
@@ -144,6 +145,16 @@ void test_clone() {
 	//print2(str, strlen(str));
 }
 
+void test_read() {
+	char buffer[30];
+	int err = read(0,buffer,5);
+	if (err >= 0) {
+		print2("chars: ",7);
+		print2(buffer,5);
+	}
+	else print2("error",5);
+}
+
 int __attribute__ ((__section__(".text.main")))
    main(void)
 {
@@ -152,8 +163,10 @@ int __attribute__ ((__section__(".text.main")))
 
 	
 	//print2("Funca",5);
-	test_clone();
-    //test_fork();
+	//test_clone();
+    //test_write();
+    //exit();
+    test_read();
     while(1) {
     	//exit();
     	//test_fork();

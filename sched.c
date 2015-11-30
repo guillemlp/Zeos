@@ -83,10 +83,10 @@ int calculate_dir_pos(struct task_struct *t) {
 void cpu_idle(void)
 {
 	__asm__ __volatile__("sti": : :"memory");
-
+	sys_write(1,"idle",4);
 	while(1)
 	{
-		sys_write(1,"idle",4);
+		;//sys_write(1,"idle",4);
 	}
 }
 
@@ -137,8 +137,9 @@ void sched_next_rr() {
 	struct list_head *e;
 	struct task_struct *t;
 
-	e = list_first(&readyqueue);
-	if (e) {
+	//e = list_first(&readyqueue);
+	if (!list_empty(&readyqueue)) {
+		e = list_first(&readyqueue);
 		list_del(e);
 		t = list_head_to_task_struct(e);
 	}
@@ -349,6 +350,11 @@ void init_sched(){
 	}
 
 	init_keyboard_buffer();
+	//add_key('a');
+	//add_key('b');
+	//add_key('c');
+	//add_key('d');
+	//print_buffer(4);
 
 }
 
@@ -372,8 +378,22 @@ void init_keyboard_buffer() {
 int can_read(int count) {
 	// return 1 if can read
 	// o otherwise
-	int restants = MAX_PRESSED_KEYS - key_buffer.write_keys;
-	return restants >= count;
+	return key_buffer.write_keys >= count;
+}
+int add_key(char c) {
+	// return 1 if can read
+	// o otherwise
+	if (is_full()) return -1;
+	key_buffer.pressed_keys[key_buffer.punter_write++] = c;
+	key_buffer.write_keys++;
+	return 0;
+}
+void print_buffer(int n) {
+	sys_write(1,"dins: ",6);
+	char buf[2];
+	itoa(remaining(),buf);
+	sys_write(1,buf,2);
+	sys_write(1,key_buffer.pressed_keys,n);
 }
 int remaining() {
 	return MAX_PRESSED_KEYS - key_buffer.write_keys;
@@ -388,6 +408,7 @@ void copy_all(char *buf) {
 	copy_to_user(&key_buffer.pressed_keys[0], buf+(inici_num), inici);
 	key_buffer.punter_read = 0;
 	key_buffer.punter_write = 0;
+	key_buffer.write_keys = 0;
 }
 void copy(char *buf, int cont) {
 	int inici = key_buffer.punter_read;
@@ -405,4 +426,5 @@ void copy(char *buf, int cont) {
 		key_buffer.punter_read = restants;
 		copy_to_user(&key_buffer.pressed_keys[0], buf+(inici_num), restants);
 	}
+	key_buffer.write_keys -= cont;
 }
