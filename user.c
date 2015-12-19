@@ -146,11 +146,12 @@ void test_clone() {
 }
 
 void test_read() {
+	int tam_read = 5;
 	char buffer[30];
-	int err = read(0,buffer,5);
+	int err = read(0,buffer,tam_read);
 	if (err >= 0) {
 		print2("chars: ",7);
-		print2(buffer,5);
+		print2(buffer,tam_read);
 	}
 	else print2("error",5);
 }

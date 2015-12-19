@@ -104,12 +104,27 @@ void print_key(char key) {
 
 // keyboard service routine
 void keyboard_routine(void) {
+  struct list_head *e;
+  struct task_struct *t;
   unsigned char c = inb(0x60);
   if ((c & 0x80) == 0) { // make
     char aux = char_map[c&0x7F];
     if (aux != '\0') {
         print_key(aux);
         add_key(aux);
+        if (threads_waiting()) {
+          //sys_write(1,"esperant",8);
+          e = list_first(&key_buffer.keyboardqueue);
+          t = list_head_to_task_struct(e);
+          if (can_read(t->num_chars_to_read)) {
+            sys_write(1,"llegim",6);
+            list_del(e);
+            list_add_tail(e, &readyqueue);
+          }
+        }
+        //char b[1];
+        //itoa(current()->num_chars_to_read,b);
+        //sys_write(1,b,1);
         //print_buffer(6);
     }
     else {

@@ -20,7 +20,6 @@
 
 extern struct list_head freequeue;
 extern struct list_head readyqueue;
-extern struct list_head keyboardqueue;
 extern struct keyboard_buffer key_buffer;
 extern struct sem_struct list_sem[20];
 extern int freePID;
@@ -203,33 +202,66 @@ int sys_gettime() {
 	}*/
 	return zeos_ticks;
 }
-
 int sys_read(int fd, char *buf, int count) {
-	// check parameters
-	//sys_write(1,"before0",7);
-	int check = check_fd(fd,LECTURA);
+    int size_original = count;
+    int check = check_fd(fd, LECTURA);
 	if (check < 0) return check;
+	if (buf == NULL) return -14; // EFAULT Bad address
 	if (count == 0) return 0;
 	if (count < 0) return -9; // bad params  EBADF
-	if (buf == 0) return -14; // EFAULT Bad address
-	sys_write(1,"before0->",9);
-	if (!list_empty(&keyboardqueue)) {
-		list_add_tail(&current()->list, &keyboardqueue);
+    else {
+        int num = sys_read_keyboard(buf,count);	      
+	    return num;
+    }
+}
+
+int sys_read_keyboard(char *buf, int count) {
+	struct list_head *e;
+	struct task_struct *t;
+
+	current()->num_chars_to_read = count;
+
+	// check parameters
+	//sys_write(1,"before0",7);
+	
+	//sys_write(1,"before0->",9);
+	if (!list_empty(&key_buffer.keyboardqueue)) {
+		list_add_tail(&current()->list, &key_buffer.keyboardqueue);
+		//current()->num_chars_to_read = count;
 		sched_next_rr();
 	}
-	sys_write(1,"before1->",9);
-	if (can_read(count)) {
-		// copy all copy_to_user(void *start, void *dest, int size);
-		copy(buf, count);
-		return count;
-	}
-	sys_write(1,"before2->",9);
-	if (is_full()) {
-		// copy the whole content
-		copy_all(buf);
-	}
-	list_add(&current()->list, &keyboardqueue);
-	sched_next_rr();
+	//do things
+	while (current()->num_chars_to_read > 0)	
+		if (can_read(count)) {
+			// copy all copy_to_user(void *start, void *dest, int size);
+			copy(buf, count);
+			return count;
+		}
+		//char b[1];
+		//itoa(current()->PID,b);
+		//sys_write(1,b,1);
+		//sys_write(1," <-PID-> ",9);
+		
+		else if (is_full()) {
+			// copy the whole content
+			copy_all(buf);
+			//sys_write(1,"before3->",9);
+		}
+
+		list_add(&(current()->list), &key_buffer.keyboardqueue);
+		//e = list_first(&key_buffer.keyboardqueue);
+		//t = list_head_to_task_struct(e);
+
+		//struct task_struct *aux = list_first(&key_buffer.keyboardqueue);
+	  	//int n = aux->num_chars_to_read;
+		//int n = t->num_chars_to_read;
+		//char bb[1];
+	    //itoa(n,bb);
+	    //sys_write(1,bb,1);
+		sched_next_rr();
+	
+	
+	return count;
 }
 
 // Write system call Service routine

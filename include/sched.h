@@ -24,9 +24,11 @@ struct task_struct {
   int total_quantum;
   enum state_t state;
   struct stats p_stats;		/* Process stats */
+  int num_chars_to_read;
 };
 
 struct keyboard_buffer {
+	struct list_head keyboardqueue; // processes blocked by the keyboard
 	char pressed_keys[MAX_PRESSED_KEYS];
 	int punter_read;
 	int punter_write;
@@ -93,5 +95,6 @@ int remaining();
 int is_full();
 void copy_all(char *buf);
 void copy(char *buf, int cont);
+int threads_waiting();
 
 #endif  /* __SCHED_H__ */

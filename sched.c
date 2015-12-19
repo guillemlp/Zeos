@@ -10,7 +10,7 @@
 // global variables
 struct list_head freequeue;
 struct list_head readyqueue;    
-struct list_head keyboardqueue; // processes blocked by the keyboard
+
 
 // structs
 struct keyboard_buffer key_buffer;
@@ -337,9 +337,7 @@ void init_sched(){
 
 	// initialization readyqueue
 	INIT_LIST_HEAD( &readyqueue );
-
-	// initialization keyboardqueue
-	INIT_LIST_HEAD( &keyboardqueue );	
+	
 
 	// add all process structs to frequeue
 	int i;
@@ -374,6 +372,8 @@ void init_keyboard_buffer() {
 	key_buffer.punter_read = 0;
 	key_buffer.punter_write = 0;
 	key_buffer.write_keys = 0;
+	// initialization keyboardqueue
+	INIT_LIST_HEAD( &key_buffer.keyboardqueue );	
 }
 int can_read(int count) {
 	// return 1 if can read
@@ -386,6 +386,7 @@ int add_key(char c) {
 	if (is_full()) return -1;
 	key_buffer.pressed_keys[key_buffer.punter_write++] = c;
 	key_buffer.write_keys++;
+	//print_buffer(key_buffer.write_keys);
 	return 0;
 }
 void print_buffer(int n) {
@@ -427,4 +428,7 @@ void copy(char *buf, int cont) {
 		copy_to_user(&key_buffer.pressed_keys[0], buf+(inici_num), restants);
 	}
 	key_buffer.write_keys -= cont;
+}
+int threads_waiting() {
+	return !list_empty(&key_buffer.keyboardqueue);
 }
