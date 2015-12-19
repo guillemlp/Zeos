@@ -15,6 +15,7 @@ extern struct task_struct * idle_task;
 extern struct task_struct * init_task;
 extern struct task_struct * fill_task; 
 extern struct keyboard_buffer key_buffer;
+extern struct list_head readyqueue;
 
 Gate idt[IDT_ENTRIES];
 Register    idtR;
