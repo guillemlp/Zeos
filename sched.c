@@ -192,6 +192,10 @@ void init_idle (void) {
 	list_del( first ); 
 	// Assign PID 0 to the process
 	idletask->PID = 0;
+
+	idletask->heap_start = NULL;
+	idletask->bytesHeap = 0;
+	idletask->numPagesHeap = 0;
 	// Initialize field dir_pages_baseAaddr with a
 	// new directory to store the process address 
 	// space using the allocate_DIR routine.
@@ -223,31 +227,35 @@ void init_idle (void) {
 }
 
 void init_task2(void) {
-  struct list_head *l = list_first(&freequeue);
-  list_del(l);
-  struct task_struct *c = list_head_to_task_struct(l);
-  union task_union *uc = (union task_union*)c;
+	struct list_head *l = list_first(&freequeue);
+	list_del(l);
+	struct task_struct *c = list_head_to_task_struct(l);
+	union task_union *uc = (union task_union*)c;
 
-  c->PID=1;
+	c->PID=1;
 
-  c->total_quantum=DEFAULT_QUANTUM;
+	c->heap_start = NULL;
+	c->bytesHeap = 0;
+	c->numPagesHeap = 0;
 
-  c->state=ST_RUN;
+	c->total_quantum=DEFAULT_QUANTUM;
 
-  quantum_remaining=c->total_quantum;
+	c->state=ST_RUN;
 
-  init_stats(&c->p_stats);
+	quantum_remaining=c->total_quantum;
 
-  allocate_DIR(c);
+	init_stats(&c->p_stats);
 
-  set_user_pages(c);
+	allocate_DIR(c);
 
-  tss.esp0=(DWord)&(uc->stack[KERNEL_STACK_SIZE]);
+	set_user_pages(c);
 
-  set_cr3(c->dir_pages_baseAddr);
+	tss.esp0=(DWord)&(uc->stack[KERNEL_STACK_SIZE]);
 
-  freePID = 2;
-  init_task = c;
+	set_cr3(c->dir_pages_baseAddr);
+
+	freePID = 2;
+	init_task = c;
 }
 
 void init_task1(void) {
@@ -258,6 +266,9 @@ void init_task1(void) {
 	list_del( init_lh ); 
 	// Assign PID 1 to the process
 	inittask->PID = 1;
+	inittask->heap_start = NULL;
+	inittask->bytesHeap = 0;
+	inittask->numPagesHeap = 0;
 	// Initialize field dir_pages_baseAaddr with a
 	// new directory to store the process address 
 	// space using the allocate_DIR routine.

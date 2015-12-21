@@ -188,6 +188,19 @@ int get_stats(int pid, struct stats *st) {
   return result;
 }
 
+void *sbrk(int increment) {
+  int result;
+  __asm__ __volatile__ (
+    "int $0x80\n\t"
+    :"=a" (result)
+    :"a" (45), "b" (increment));
+  if (result<0) {
+    errno = -result;
+    return -1;
+  }
+  return result;
+}
+
 void itoa(int a, char *b) {
     int i, i1;
     char c;

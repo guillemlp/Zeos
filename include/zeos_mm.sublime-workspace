@@ -1,0 +1,444 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"inc",
+				"increment"
+			],
+			[
+				"list",
+				"list_head"
+			],
+			[
+				"re",
+				"remaining"
+			],
+			[
+				"print",
+				"print_buffer"
+			],
+			[
+				"add",
+				"add_key"
+			],
+			[
+				"punter",
+				"punter_write"
+			],
+			[
+				"keyb",
+				"key_buffer"
+			],
+			[
+				"is",
+				"is_full"
+			],
+			[
+				"punt",
+				"punter_write"
+			],
+			[
+				"copy",
+				"copy_to_user"
+			],
+			[
+				"inici",
+				"inici_num"
+			],
+			[
+				"pre",
+				"pressed_keys"
+			],
+			[
+				"key",
+				"key_buffer"
+			],
+			[
+				"sch",
+				"sched_next_rr"
+			],
+			[
+				"ini",
+				"init_keyboard_buffer"
+			],
+			[
+				"curre",
+				"current"
+			],
+			[
+				"stack",
+				"stack2"
+			],
+			[
+				"thre",
+				"thread2"
+			],
+			[
+				"st",
+				"stack1"
+			],
+			[
+				"thread",
+				"thread1"
+			],
+			[
+				"list_",
+				"list_sem"
+			],
+			[
+				"test",
+				"test_clone"
+			],
+			[
+				"dir",
+				"dir_pages_baseAaddr"
+			],
+			[
+				"quan",
+				"quantum_remaining"
+			],
+			[
+				"remaining",
+				"quantum_remaining"
+			],
+			[
+				"idle",
+				"idletask"
+			],
+			[
+				"free",
+				"freequeue"
+			],
+			[
+				"PAG",
+				"PAG_LOG_INIT_DATA"
+			],
+			[
+				"current",
+				"current_PT"
+			],
+			[
+				"get",
+				"get_frame"
+			],
+			[
+				"task",
+				"task_union"
+			],
+			[
+				"list_head",
+				"list_head_to_task_struct"
+			],
+			[
+				"chil",
+				"child_ts"
+			],
+			[
+				"ready",
+				"readyqueue"
+			],
+			[
+				"ret",
+				"ret_from_fork"
+			],
+			[
+				"tas",
+				"task_union"
+			],
+			[
+				"tau",
+				"taulaP_father"
+			],
+			[
+				"page",
+				"page_table_entry"
+			],
+			[
+				"new",
+				"new_frames"
+			],
+			[
+				"child",
+				"child_ts"
+			],
+			[
+				"chi",
+				"child_ts"
+			],
+			[
+				"init",
+				"inittask"
+			],
+			[
+				"first",
+				"firsttask"
+			],
+			[
+				"zeos",
+				"zeos_ticks"
+			],
+			[
+				"Re",
+				"RESTORE_ALL"
+			],
+			[
+				"buff",
+				"buffer"
+			],
+			[
+				"sys",
+				"sys_write"
+			],
+			[
+				"check",
+				"check_fd"
+			],
+			[
+				"char",
+				"char_map"
+			],
+			[
+				"set",
+				"setInterruptHandler"
+			],
+			[
+				"al",
+				"SAVE_ALL"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/bug/UNI/Q5/SO2/lab/zeos/interrupt.c",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/sys_call_table.S",
+		"/home/bug/Downloads/debian/3270-common.install",
+		"/home/bug/UNI/Q5/AC2/lab/ac2/prac6.dir/programes/simpletest.dir/simpletest.s",
+		"/home/bug/UNI/Q5/AC2/lab/ac2/prac6.dir/programes/fact_recurs.dir/fact_recurs.desensamblado",
+		"/home/bug/Downloads/ac2/lab6/prac6.dir/CNTL_SEG_CORTOS/LDD.dwv",
+		"/home/bug/UNI/Q5/AC2/lab/ac2/prac6.dir/programes/fact_recurs.dir/fact_recurs_codigo.hex",
+		"/home/bug/shit.js",
+		"/home/bug/Documents/PROJECTES/MEAN/MeanCourse-master/LICENSE",
+		"/home/bug/popcorntime/Popcorn-Time-0.3.8-5-Linux-64/install",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/include/libc.h",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/include/list.h",
+		"/home/bug/UNI/Q5/DSBM/lab/test.c",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/system.c",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/entry.S",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/hardware.c",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/mm.c",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/include/mm.h",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/utils.c",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/list.c",
+		"/home/bug/UNI/Q5/AC2/lab/ac2/prac5.dir/programes/test_alu.dir/test_alu.desensamblado",
+		"/home/bug/android-studio/android-studio/Install-Linux-tar.txt",
+		"/media/bug/TOSHIBA EXT/old things/windows/SirWilliam/Documents/documents/Microsoft Office 2007/Key.txt",
+		"/home/bug/passwd",
+		"/home/bug/Documents/programes/Quartus-lite-15.1.0.185-linux/readme.txt",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/include/errno.h",
+		"/home/bug/merda/hello.cpp",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/user.c",
+		"/home/bug/Documents/PROJECTES/SERVIDOR/proves_javascript/io.js",
+		"/home/bug/Documents/PROJECTES/SERVIDOR/proves_javascript/for.js",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/include/system.h",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/io.c",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/include/types.h",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/bootsect.S",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/libc.c",
+		"/home/bug/UNI/Q5/SO2/zeos-examen/sys.c",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/sys.c",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/include/sched.h",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/include/stats.h",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/sched.c",
+		"/home/bug/UNI/Q5/SO2/zeos-examen/include/sched.h",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/Makefile",
+		"/home/bug/UNI/Q5/SO2/zeos-examen/include/stats.h",
+		"/home/bug/UNI/Q5/SO2/zeos-examen/system.c",
+		"/home/bug/UNI/Q5/SO2/zeos-examen/sched.c",
+		"/home/bug/UNI/Q5/SO2/zeos-examen/include/mm_address.h",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/include/utils.h",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/sys_call_table.s",
+		"/home/bug/UNI/Q5/SO2/lab/Zeos.pdf",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/devices.c",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/include/zeos_interrupt.h",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/include/interrupt.h",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/build.c",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/include/segment.h",
+		"/home/bug/UNI/Q5/SO2/lab/zeos/include/io.h",
+		"/home/bug/style-git-refer.txt",
+		"/home/bug/Documents/colors/base16/README.md",
+		"/home/bug/UNI/Q5/SO2/lab/build/Makefile"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"par",
+			"para",
+			"dir",
+			"dir_free",
+			"allocate",
+			"print",
+			"allocate",
+			"quan",
+			"curre",
+			"pointer",
+			"ENOMEM",
+			"pointer",
+			"list",
+			"\n    "
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "zeos_mm.sublime-project",
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"CYCLESPERTICK"
+			]
+		],
+		"width": 392.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

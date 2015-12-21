@@ -26,4 +26,6 @@ void exit();
 
 int get_stats(int pid, struct stats *st);
 
+void *sbrk(int increment);
+
 #endif  /* __LIBC_H__ */

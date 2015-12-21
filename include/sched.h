@@ -20,11 +20,14 @@ struct task_struct {
   int PID;			/* Process ID. This MUST be the first field of the struct. */
   page_table_entry * dir_pages_baseAddr;
   struct list_head list; /* pointer list_head structure */
-  void * kernel_stack; /* to keep the position of the stack where we stored the ebp*/
+  void *kernel_stack; /* to keep the position of the stack where we stored the ebp*/
   int total_quantum;
   enum state_t state;
   struct stats p_stats;		/* Process stats */
   int num_chars_to_read;
+  void *heap_start;
+  int bytesHeap;
+  int numPagesHeap;
 };
 
 struct keyboard_buffer {

@@ -167,7 +167,8 @@ int __attribute__ ((__section__(".text.main")))
 	//test_clone();
     //test_write();
     //exit();
-    test_read();
+    //test_read();
+    test_fork();
     while(1) {
     	//exit();
     	//test_fork();

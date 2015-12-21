@@ -114,6 +114,7 @@ int sys_clone(void (*function)(void), void *stack) {
 	return child_pid;
 
 }
+
 int sys_fork() {
 	struct list_head *child_lh = NULL;
 	union task_union *child_tu;
@@ -159,16 +160,16 @@ int sys_fork() {
  		}
  	}
 
-	// copiem system
+	// copy system
 	for (pag=0; pag<NUM_PAG_KERNEL; pag++) {
 		set_ss_pag(child_PT,pag,get_frame(father_PT,pag));
 	}
 	
-	// copiem codi
+	// copy code
 	for (pag=0; pag<NUM_PAG_CODE; pag++) {
 		set_ss_pag(child_PT,PAG_LOG_INIT_CODE+pag,get_frame(father_PT,PAG_LOG_INIT_CODE+pag));
 	}
-	
+	// copy data
 	for (pag=NUM_PAG_KERNEL+NUM_PAG_CODE; pag<NUM_PAG_KERNEL+NUM_PAG_CODE+NUM_PAG_DATA; pag++) {
 	    set_ss_pag(father_PT, pag+NUM_PAG_DATA, get_frame(child_PT, pag));
 	    copy_data((void*)((pag)*PAGE_SIZE), (void*)((pag+NUM_PAG_DATA)*PAGE_SIZE), PAGE_SIZE);
@@ -315,8 +316,7 @@ int sys_sem_destroy(int n_sem) {
 	return 0;
 }
 
-int sys_get_stats(int pid, struct stats *st)
-{
+int sys_get_stats(int pid, struct stats *st) {
   int i;
   
   if (!access_ok(VERIFY_WRITE, st, sizeof(struct stats))) return -12; 
@@ -332,6 +332,64 @@ int sys_get_stats(int pid, struct stats *st)
     }
   }
   return -12; /*ESRCH */
+}
+
+void *sys_sbrk(int increment) {
+	int HEAP_START = (NUM_PAG_KERNEL + NUM_PAG_CODE + NUM_PAG_DATA)*PAGE_SIZE;
+    if (current()->heap_start == NULL) {
+    	int frame = alloc_frame();
+    	if (frame < 0) return frame;
+    	set_ss_pag(get_PT(current()),HEAP_START/PAGE_SIZE,frame);
+    	current()->heap_start = HEAP_START;
+    	current()->numPagesHeap = 1;
+    }
+    if (increment == 0) {
+	    return (current()->heap_start + current()->bytesHeap);
+    }
+    else if (increment > 0) {
+    	void *old = current()->heap_start + current()->bytesHeap;
+    	if ((current()->bytesHeap)%PAGE_SIZE + increment < PAGE_SIZE) {
+    		current()->bytesHeap += increment;
+    	}
+    	else {
+    		current()->bytesHeap += increment;
+    		while ((current()->numPagesHeap*PAGE_SIZE) < current()->bytesHeap) {
+    			int frame = alloc_frame();
+    			if (frame < 0) {
+    				current()->bytesHeap -= increment;
+    				// Review
+    				while((current()->numPagesHeap*PAGE_SIZE)-current()->bytesHeap > PAGE_SIZE) {
+                        free_frame(get_frame(get_PT(current()), HEAP_START/PAGE_SIZE + current()->numPagesHeap - 1));
+	    				del_ss_pag(get_PT(current()), ((HEAP_START/PAGE_SIZE) + current()->numPagesHeap)- 1);
+	    				current()->numPagesHeap--;
+	    			}
+    				return frame;
+    			}
+    			set_ss_pag(get_PT(current()), ((HEAP_START/PAGE_SIZE) + current()->numPagesHeap), frame);
+    			current()->numPagesHeap++;
+    		}
+    	}
+    	return old;
+    }
+    else if (current()->bytesHeap + increment < 0) {
+    	current()->bytesHeap = 0;
+    	while((current()->numPagesHeap) > 0) {
+    		free_frame(get_frame(get_PT(current()),HEAP_START/PAGE_SIZE + current()->numPagesHeap -1 ));
+    		del_ss_pag(get_PT(current()), ((HEAP_START/PAGE_SIZE) + current()->numPagesHeap) - 1);
+    		current()->numPagesHeap--;
+    	}
+    	return current()->heap_start;
+    }
+    else {
+    	current()->bytesHeap += increment;
+    	while((current()->numPagesHeap*PAGE_SIZE)-current()->bytesHeap > PAGE_SIZE) {
+    		free_frame(get_frame(get_PT(current()), HEAP_START/PAGE_SIZE + current()->numPagesHeap -1));
+    		del_ss_pag(get_PT(current()), ((HEAP_START/PAGE_SIZE) + current()->numPagesHeap) - 1);
+    		current()->numPagesHeap--;
+    	}
+    	return current()->heap_start + current()->bytesHeap;
+
+    }
 }
 
 
